@@ -127,7 +127,7 @@ def __range(max,dec,min) -> int:
 
 
 
-def simulated_annealing(mp,data = False) -> None:
+def simulated_annealing(mp:mapping.mappingGRN,data = False) -> None:
     """ 
         Aplies Simulated Annealing algorithm on a GRN mapped into CGRA
         - Starts with a random mapped GRN
@@ -214,6 +214,8 @@ def simulated_annealing(mp,data = False) -> None:
 
         # Decrease temp 
         T *= 0.999
+
+    #mp.generate_histogram()
 
     if data == True:
         mp.get_all_stats()

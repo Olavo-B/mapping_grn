@@ -15,8 +15,12 @@ class mappingGRN:
     def __init__(self, file_path, graph) -> None:
         self.set_cgra(file_path)
         self.set_grn(graph)
-
-
+        self.cost_table=[]
+        self.hist = {}
+        
+        for i in self.cgra.nodes():
+            self.cost_table.append(nx.single_source_dijkstra(self.cgra, i)[0])
+        
 
     # SETS
     def set_cgra(self, file_path) -> None:
@@ -56,6 +60,8 @@ class mappingGRN:
     def get_cgra(self) -> nx.DiGraph:
         return self.cgra
 
+    def get_cost(self,source,target):
+        return self.cost_table[source][target]
 
     def get_grn(self) -> nx.DiGraph:
         return self.grn
@@ -78,6 +84,8 @@ class mappingGRN:
     def get_num_swaps(self) -> int:
         return self.ctSwap
 
+    def get_hist(self) -> dict:
+        return self.hist
 
     def get_dot(self):
         return json2graph.nx_2_dot(self.cgra)
@@ -138,7 +146,6 @@ class mappingGRN:
             for i in range(2,10):
                 for j in range(2,10):
                     empty_pe.append(15 * i + j) # fixado para arch 15x15
-            print(empty_pe)
         else:
             empty_pe = list(range(self.arc_size))
         
@@ -265,14 +272,18 @@ class mappingGRN:
             if bridge_dict[pe] == max : 
                 nx.set_node_attributes(self.cgra,{pe: {'shape': 'Msquare'}})
 
-
-
-    
         return self.get_cgra()
 
-        
-
-       
+    def generate_histogram(self):
+        hist = {i : 0 for i in range(1,self.get_worstcase()+1)}
+        for node in self.grn.nodes():
+            pe1 = self.grn_2_arc(node)
+            for neighbor in self.grn.neighbors(node):
+                if neighbor == node: continue
+                pe2 = self.grn_2_arc(neighbor)
+                dist = self.get_cost(pe1,pe2)
+                hist[dist]+=1
+        return hist
 
     def total_edge_cost(self) -> int:
         """ Returns the init_cost edge cost from peX to peY.
@@ -286,7 +297,8 @@ class mappingGRN:
             y = self.grn_2_arc(edge[1])
 
             # Calcualte distance between peX and peY
-            dist_xy = nx.dijkstra_path_length(self.cgra,x,y)
+            dist_xy = self.get_cost(x,y) # -> tabela
+            
             if dist_xy == 3 or dist_xy == 2:
                 self.cost += 1
             else:
@@ -296,79 +308,3 @@ class mappingGRN:
             if dist_xy > self.wcase: self.wcase = dist_xy
 
         return self.cost
-
-# =========================== fix needed =========================== #
-
-
-
-    def adjust_node(self,G: nx.DiGraph,node,out_degree,i=0) -> None:
-        """ Create auxiliary nodes in a GRN if the out_degree of a gene is up to 4, 
-            connecting this gene with the new node
-
-            Parameters
-            ----------
-            G: digraph
-                A networkX digraph in which will be add new nodes as bridges
-            node: node-like from networkx 
-                a node from the graph G that will be the start link of the bride i
-            out_degree: int
-                the number of edges that get out of node
-            i: int
-                the label that will be the name of the bridge
-
-            Returns
-            ----------
-            The GRN with new nodes used as bridges for high out_degree genes, each new node have a atribute
-            'bridge' = True
-
-            Notes
-            ----------
-            For more: https://excalidraw.com/#json=_u3d67AErZB19oQ0qeDGr,th6yvk8UgBEsTCsW0mqQKw  
-        """
-        
-        if G.degree(node) <= 4 | out_degree == 0:
-            return
-        
-        new_node_name = node + "_bridge"
-        G.add_node(new_node_name,bridge = True)
-        G.add_edge(node, new_node_name)
-
-        remove_edges = []
-        for neighbor in G.neighbors(node):
-            if G.degree(node) <= 4 | out_degree == 0: break
-            G.add_edge(new_node_name,neighbor)
-            remove_edges.append([node,neighbor])
-            
-        G.remove_edges_from(remove_edges)
-
-        self.adjust_node(G,new_node_name,G.out_degree(new_node_name))
-
-    def merge_nodes(self,G: nx.DiGraph,merge_nodes: list) -> None:
-        for m_node in merge_nodes[1:]:
-            nx.contracted_nodes(G,merge_nodes[0],m_node,copy=False)
-        
-    def adjust_GRN(self,GRN: nx.DiGraph) -> nx.DiGraph:
-        """ Create auxiliary nodes in a GRN if the out_degree of a gene is up to 4, 
-            connecting this gene with the new node
-
-            Parameters
-            ----------
-            GRN: digraph
-                A networkX digraph
-                A gene regulatory network that will be modeled into a new graph with max out_degree = 4
-
-            Returns
-            ----------
-            A new networkx digraph with new nodes as bridges
-
-            Notes
-            ----------  
-        """
-        
-        G = nx.DiGraph(GRN)
-
-        G.remove_edges_from(nx.selfloop_edges(G))
-        
-        '''Fix needed'''
-        
-        return G

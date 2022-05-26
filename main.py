@@ -6,9 +6,6 @@ from src.include.save_script import save_script
 import src.algorithms.simulated_anealling2t as sm2t
 
 
-
-
-
 def main():
     grn2dot = Grn2dot('misc/Benchmark_53.txt')
 
@@ -22,6 +19,7 @@ def main():
 
 
     mapping = mappingGRN(arch_path, GRN)
+    sm2t.simulated_annealing(mapping,data=True)
     # mapping2t = mappingGRN(arch_path, GRN)
     
     # print(mapping.get_mapped_grn())
@@ -30,14 +28,14 @@ def main():
     # print("SM")
     # sm.simulated_annealing(mapping,data=True)
     # print("SM2T")
-    # sm2t.simulated_annealing(mapping,data=True)
-
 
     # ### CGRA VISUALIZATION ###
-    arch = mapping.graph_visu()
-    dot,nodes = visualGraph.arch_struct(arch)
-    visualGraph.build_dot(dot,nodes,[15,15],fname)
+    #arch = mapping.graph_visu()
+    #dot,nodes = visualGraph.arch_struct(arch)
+    #visualGraph.build_dot(dot,nodes,[15,15],fname)
 
+    #print(mapping.get_mapped_grn())
+    
     # ### GRAPH TOTAL_COST X N_SWAPS ###
     # visualGraph.sa_curve(mapping.get_allcost(),fname)
 
