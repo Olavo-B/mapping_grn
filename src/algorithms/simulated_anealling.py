@@ -188,6 +188,7 @@ def simulated_annealing(mp,data = False) -> None:
         # If it's a good swap
         is_good = new_cost<init_cost or rand.random()<accProb
         if is_good:
+            init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
             # Swap peU content with peV content
             mp.r_mapping.update({peU:v, peV:u})
             # progression of costs and num. of swaps
