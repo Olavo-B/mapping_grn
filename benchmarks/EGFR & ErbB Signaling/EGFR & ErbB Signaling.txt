@@ -1,0 +1,6 @@
+Number of nodes in GRN:                        132 
+Number of edges in GRN:                        227 
+Average in-degree:              1.7196969696969697 
+Average out-degree:             1.7196969696969697 
+Max in-degree:                                  15 
+Max out-degree:                                 12

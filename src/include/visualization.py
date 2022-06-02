@@ -10,28 +10,37 @@ import src.algorithms.simulated_anealling as sa
 
 
 
-def num_pes_used(n_simu: int, mapping: mappingGRN, GRN: nx.DiGraph) -> pd.DataFrame:
 
-    arc = mapping.get_cgra()
-    data = {pe : 0 for pe in arc.nodes()}
+def get_histogram(data:dict,arch_name:str,grn_name:str,i, show_plot = False) -> None:
 
-    for i in range(n_simu):
-        mapping.simulated_annealing()
-        pe_dict = mapping.get_mapped_grn()
-        for pe in list(pe_dict.keys()):
-            if pe_dict[pe] in GRN.nodes():
-                data[pe] += 1
 
-    df = pd.DataFrame(list(data.items()), columns=['PE','N times used'])
-    
-    chart = alt.Chart(df).mark_bar().encode(
-    alt.X("PE:N"),
-    alt.Y("N times used"),
-    )
+    source =  pd.DataFrame.from_dict(data,orient='index',columns=['num_cases'])
 
-    chart.save('histogram_{}PEs_{}T_{}GRN.html'.format(mapping.get_arc_size(),n_simu,GRN.number_of_nodes()))
 
-    return df
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.bar(list(source.index.values),list(source['num_cases']))
+    ax.set_title('Number of connections by distance')
+    ax.set_xlabel('Distance')
+    ax.set_ylabel('Num of connections')
+
+
+    path = f"benchmarks/{grn_name}/histogram"  
+    file_name = f"{arch_name}_{i}.svg"
+
+    isExist = os.path.exists(path)
+
+    if not isExist:
+  
+        # Create a new directory because it does not exist 
+        os.makedirs(path)
+        print("The new directory is created!")
+
+    completeName = os.path.join(path, file_name)
+
+
+    plt.savefig(completeName,dpi=150)
+    if show_plot: plt.show()
 
 
 
@@ -45,7 +54,7 @@ def sa_curve(data:list,arch_name:str,grn_name:str, show_plot = False) -> None:
     ax.set_ylabel('total cost')
 
 
-    path = f"benchmarks\\{grn_name}"  
+    path = f"benchmarks/{grn_name}/sa_curve"  
     file_name = f"{arch_name}.svg"
 
     isExist = os.path.exists(path)
@@ -105,7 +114,7 @@ def build_dot(graph: pydot.Dot, nodes: list, dim: list, arch_name: str,grn_name:
 
     graph_string = graph_string + "}"
 
-    path = f"benchmarks\\{grn_name}"  
+    path = f"benchmarks/{grn_name}/DOT"  
     file_name = f"{arch_name}.dot"
 
 

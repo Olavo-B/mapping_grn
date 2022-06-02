@@ -1,8 +1,11 @@
-from grn2dot.grn2dot import Grn2dot
+from src.include.save_script import generate_metadata
+import src.algorithms.simulated_anealling2t as sm2t
 import src.include.visualization as visualization
-from src.mappingGRN import mappingGRN
 import src.algorithms.simulated_anealling as sm
 from src.include.save_script import save_script
+from src.include.save_script import get_grn_dot
+from src.mappingGRN import mappingGRN
+from grn2dot.grn2dot import Grn2dot
 
 
 
@@ -17,31 +20,31 @@ def main():
     arch_path = 'misc/arch/15x15/cgra_mesh_ho_15x15.json'
 
     aux = arch_path.split('/')
-    aux = aux[1].split('.')
+    aux = aux[3].split('.')
     fname = aux[0]
 
-
-
     mapping = mappingGRN(arch_path, GRN)
-    # sm.simulated_annealing(mapping)
 
 
 
-    # ### CGRA VISUALIZATION ###
-    # visualization.get_dot(mapping,fname,'ex',False)
+    ### TEST BENCH ###
+    # sm.simulated_annealing(mapping,data=True)
+    # list_hist = mapping.get_hist()
+    # print(f"WC: {mapping.get_worstcase()}")
 
 
-    # ### GRAPH TOTAL_COST X N_SWAPS ###
-    # visualization.sa_curve(mapping.get_allcost(),fname,'ex')
-
-    # # ### HISTOGRAM OF N TIMES A PE WAS USED ###
-    # # # visualGraph.num_pes_used(10,mapping,GRN)
-
-    # # print(mapping.get_num_swaps())
+    # visualization.get_histogram(list_hist[-1],fname,'histogram',len(list_hist))
+    # visualization.get_histogram(list_hist[0],fname,'histogram',0)
 
 
-    # ### BENCHMARK ###
-    save_script("misc\\grn_benchmarks-main","misc\\arch\\15x15")
+    ### GRN DOT ###
+    get_grn_dot("misc/grn_benchmarks-main")
+
+
+
+    ### BENCHMARK ###
+    # save_script("misc/grn_benchmarks-main","misc/arch/15x15")
+
 
 
 

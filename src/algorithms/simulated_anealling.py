@@ -1,11 +1,11 @@
 from tqdm import tqdm
-import src.mappingGRN
+from src.mappingGRN import mappingGRN
 import networkx as nx
 import random as rand
 import math
 
 
-def __evaluate_move(mp,u,v,peU,peV) -> int:
+def __evaluate_move(mp: mappingGRN,u,v,peU,peV) -> int:
         """ Returns the local cost from peU to all neighbors peW and
             the new local cost from peU (where peU is on peV) to
             to all neighbors peW. """
@@ -15,14 +15,14 @@ def __evaluate_move(mp,u,v,peU,peV) -> int:
             for w in mp.grn.neighbors(u):
                 if w==u: continue # Calculate distance only for the neighbors of v
                 peW = mp.grn_2_arc(w)
-                localC      += nx.dijkstra_path_length(mp.cgra,peU,peW)
-                newLocalC   += nx.dijkstra_path_length(mp.cgra,peV,peW)    
+                localC += mp.get_cost(peU,peW)
+                newLocalC += mp.get_cost(peV,peW)
             
             for w in mp.grn.predecessors(u):
                 if w==u: continue # Calculate distance only for the neighbors of v
                 peW = mp.grn_2_arc(w)
-                localC      += nx.dijkstra_path_length(mp.cgra,peW,peU)
-                newLocalC   += nx.dijkstra_path_length(mp.cgra,peW,peV)
+                localC += mp.get_cost(peW,peU)
+                newLocalC += mp.get_cost(peW,peV)
 
         return localC, newLocalC
 
@@ -54,6 +54,7 @@ def __switching_cost(mp,u,v,peU,peV,init_cost) -> int:
 def __fit(mp,u,v,peU,peV) -> bool:
     """ Give two GRN's nodes and two pe of the CGRA, validate if the swap between this two
         PEs is the optimal based on the in_degree of each parameter
+
         Parameters
         ----------
         u: Node Label
@@ -64,9 +65,11 @@ def __fit(mp,u,v,peU,peV) -> bool:
             A node in the CGRA graph
         peV: Node Label
             A node in the CGRA graph
+
         Returns
         ----------
         True if it is a optimal swap, false otherwise.
+
         Notes
         ----------
         For more, access: https://excalidraw.com/#json=VpNWRIhAEcB5gAjIEA6BK,AyAnSPqGGmpOy_j6NGb6ZA
@@ -188,12 +191,17 @@ def simulated_annealing(mp,data = False) -> None:
             # Swap peU content with peV content
             mp.r_mapping.update({peU:v, peV:u})
             # progression of costs and num. of swaps
-            if mp.ctSwap%8==0: 
+            if mp.ctSwap%2==0: 
                 mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
+                mp.generate_wcase()
+                mp.generate_histogram()
+
             mp.ctSwap += 1
 
         # Decrease temp 
         T *= 0.999
+
+    mp.generate_wcase()
 
 
     if data == True:

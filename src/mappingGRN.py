@@ -14,6 +14,12 @@ class mappingGRN:
     def __init__(self, file_path, graph) -> None:
         self.set_cgra(file_path)
         self.set_grn(graph)
+        self.cost_table=[]
+        self.hist = []
+
+
+        for i in self.cgra.nodes():
+            self.cost_table.append(nx.single_source_dijkstra(self.cgra, i)[0])
 
 
 
@@ -49,6 +55,11 @@ class mappingGRN:
         self.__random_mapping()
 
     # GETS
+
+    def get_cost(self,source,target):
+        return self.cost_table[source][target]
+
+
     def get_arc_size(self) -> int:
         return self.arc_size
 
@@ -80,6 +91,9 @@ class mappingGRN:
 
     def get_dot(self):
         return json2graph.nx_2_dot(self.cgra)
+
+    def get_hist(self) -> dict:
+        return self.hist
 
     def display_arc(self):
         bline = math.sqrt(self.arc_size)
@@ -162,24 +176,52 @@ class mappingGRN:
         try: 
             return self.r_mapping[node]   
         except: return None
+
+    def generate_histogram(self):
+        hist = {i : 0 for i in range(1,self.get_worstcase()+1)}
+
+        for node in self.grn.nodes():
+            pe1 = self.grn_2_arc(node)
+            for neighbor in self.grn.neighbors(node):
+                if neighbor == node: continue
+
+                pe2 = self.grn_2_arc(neighbor)
+                dist = self.get_cost(pe1,pe2)
+                hist[dist]+=1
+
+
+        self.hist.append(hist)
+
+    def generate_wcase(self):
+        wc = 0
+
+
+        for node in self.grn.nodes():
+            pe1 = self.grn_2_arc(node)
+            for neighbor in self.grn.neighbors(node):
+                if neighbor == node: continue
+
+                pe2 = self.grn_2_arc(neighbor)
+                dist = self.get_cost(pe1,pe2)
+                if dist > wc : wc = dist
+
+
+        self.wcase = wc
  
     def total_edge_cost(self) -> int:
         """ Returns the init_cost edge cost from peX to peY.
             Also calculates the worst case cost. """
 
         # Reset costs
-        self.cost,self.wcase=0,0
+        self.cost=0
         for edge in self.grn.edges():
             # Get edge xy from grn
             x = self.grn_2_arc(edge[0])
             y = self.grn_2_arc(edge[1])
 
             # Calcualte distance between peX and peY
-            dist_xy = nx.dijkstra_path_length(self.cgra,x,y)
+            dist_xy = self.get_cost(x,y)
             self.cost += dist_xy
-
-            # Calculate worst case
-            if dist_xy > self.wcase: self.wcase = dist_xy
 
         return self.cost
 
