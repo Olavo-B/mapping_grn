@@ -1,5 +1,3 @@
-
-
 from numpy import empty
 import src.include.json2graph as json2graph
 import src.algorithms.simulated_anealling as sa
@@ -16,12 +14,11 @@ class mappingGRN:
         self.set_cgra(file_path)
         self.set_grn(graph)
         self.cost_table=[]
-        self.hist = {}
+        self.hist = []
         
         for i in self.cgra.nodes():
             self.cost_table.append(nx.single_source_dijkstra(self.cgra, i)[0])
         
-
     # SETS
     def set_cgra(self, file_path) -> None:
         f               = open(file_path)
@@ -31,16 +28,12 @@ class mappingGRN:
         nx.set_edge_attributes(self.cgra,'penwidth(0.1)','style')
         nx.set_edge_attributes(self.cgra,'grey89','color')
         nx.set_edge_attributes(self.cgra,' ','tooltip')
-
-
         nx.set_node_attributes(self.cgra,'8','fontsize')
         nx.set_node_attributes(self.cgra,'#FFFFFF','fillcolor')
         nx.set_node_attributes(self.cgra,' ','label')
         nx.set_node_attributes(self.cgra,' ','tooltip')
         nx.set_node_attributes(self.cgra,'square','shape')
-
         f.close()
-
 
     def set_grn(self, graph: nx.DiGraph ) -> None:
         # init values
@@ -49,7 +42,6 @@ class mappingGRN:
         self.allCost=[]
         self.r_mapping = {}
         self.grn = graph
-
 
         self.__random_mapping(4)
 
@@ -60,27 +52,18 @@ class mappingGRN:
     def get_cgra(self) -> nx.DiGraph:
         return self.cgra
 
-    def get_cost(self,source,target):
-        return self.cost_table[source][target]
-
     def get_grn(self) -> nx.DiGraph:
         return self.grn
 
-
     def get_mapped_grn(self) -> dict:
-        ''' Return r_mapping
-        '''
         return self.r_mapping
-
 
     def get_worstcase(self) -> int:
         return self.wcase
 
-
     def get_allcost(self) -> int:
         return self.allCost
 
-    
     def get_num_swaps(self) -> int:
         return self.ctSwap
 
@@ -89,17 +72,6 @@ class mappingGRN:
 
     def get_dot(self):
         return json2graph.nx_2_dot(self.cgra)
-
-    def display_arc(self):
-        bline = math.sqrt(self.arc_size)
-        for i in range(self.arc_size):
-            if i%bline==0 : print()
-            node = self.arc_2_grn(i)
-            if(self.grn.has_node(node)):
-                print(node[1], end=' ')
-            else: 
-                print('-', end=' ')
-        print()
 
     def get_all_stats(self) -> None:
         print(
@@ -110,20 +82,7 @@ class mappingGRN:
             f"\n{'Worst path cost:' : <30}{self.get_worstcase() : >10}"
         )
                                                                                 
-
     # METHODS
-    def is_monomorphism(self, GRN: nx.DiGraph) -> bool:
-        m = nx.algorithms.isomorphism.DiGraphMatcher(self.cgra,GRN)
-        return m.subgraph_is_monomorphic()
-
-
-    def get_monomorphism(self, GRN: nx.DiGraph) -> list:
-        if(self.is_monomorphism(GRN)):
-            m = nx.algorithms.isomorphism.DiGraphMatcher(self.cgra,GRN)
-            m_list = list(m.subgraph_monomorphisms_iter())
-        return m_list
-
-
     def __random_mapping(self, seed=None) -> None: 
         """ Return a dictionary where the keys are nodes in the architecture and the values are random nodes from the graph.
 
@@ -156,7 +115,6 @@ class mappingGRN:
         for node, k in zip(self.grn.nodes(), arc_nodes):
             self.r_mapping[k] = node
 
-
     def grn_2_arc(self,node):
         """ Give one node in the GRN, return the CGRA's node that it is in.
 
@@ -179,13 +137,13 @@ class mappingGRN:
         except: return node
         return key_list[position]
 
-
     def arc_2_grn(self,node):
         try: 
             return self.r_mapping[node]   
         except: return None
  
-        
+    def distance(self,source,target):
+        return self.cost_table[source][target]
 
     def graph_visu(self) -> nx.DiGraph:
         """ Graph visualization with .dot 
@@ -274,16 +232,16 @@ class mappingGRN:
 
         return self.get_cgra()
 
-    def generate_histogram(self):
+    def generate_histogram(self) -> None:
         hist = {i : 0 for i in range(1,self.get_worstcase()+1)}
         for node in self.grn.nodes():
             pe1 = self.grn_2_arc(node)
             for neighbor in self.grn.neighbors(node):
                 if neighbor == node: continue
                 pe2 = self.grn_2_arc(neighbor)
-                dist = self.get_cost(pe1,pe2)
+                dist = self.distance(pe1,pe2)
                 hist[dist]+=1
-        return hist
+        self.hist.append(hist)
 
     def total_edge_cost(self) -> int:
         """ Returns the init_cost edge cost from peX to peY.
@@ -297,7 +255,7 @@ class mappingGRN:
             y = self.grn_2_arc(edge[1])
 
             # Calcualte distance between peX and peY
-            dist_xy = self.get_cost(x,y) # -> tabela
+            dist_xy = self.distance(x,y)
             
             if dist_xy == 3 or dist_xy == 2:
                 self.cost += 1
