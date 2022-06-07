@@ -1,11 +1,11 @@
 from tqdm import tqdm
-import src.mappingGRN
+from src.mappingGRN import mappingGRN
 import networkx as nx
 import random as rand
 import math
 
 
-def __evaluate_move(mp,u,v,peU,peV) -> int:
+def __evaluate_move(mp: mappingGRN,u,v,peU,peV) -> int:
         """ Returns the local cost from peU to all neighbors peW and
             the new local cost from peU (where peU is on peV) to
             to all neighbors peW. """
@@ -15,14 +15,14 @@ def __evaluate_move(mp,u,v,peU,peV) -> int:
             for w in mp.grn.neighbors(u):
                 if w==u: continue # Calculate distance only for the neighbors of v
                 peW = mp.grn_2_arc(w)
-                localC      += nx.dijkstra_path_length(mp.cgra,peU,peW)
-                newLocalC   += nx.dijkstra_path_length(mp.cgra,peV,peW)    
+                localC += mp.get_cost(peU,peW)
+                newLocalC += mp.get_cost(peV,peW)
             
             for w in mp.grn.predecessors(u):
                 if w==u: continue # Calculate distance only for the neighbors of v
                 peW = mp.grn_2_arc(w)
-                localC      += nx.dijkstra_path_length(mp.cgra,peW,peU)
-                newLocalC   += nx.dijkstra_path_length(mp.cgra,peW,peV)
+                localC += mp.get_cost(peW,peU)
+                newLocalC += mp.get_cost(peW,peV)
 
         return localC, newLocalC
 
@@ -59,13 +59,10 @@ def __fit(mp,u,v,peU,peV) -> bool:
         ----------
         u: Node Label
             A node in the GRN graph
-
         v: Node Label
             A node in the GRN graph
-
         peU: Node Label
             A node in the CGRA graph
-
         peV: Node Label
             A node in the CGRA graph
 
@@ -127,34 +124,26 @@ def simulated_annealing(mp,data = False) -> None:
         Aplies Simulated Annealing algorithm on a GRN mapped into CGRA
         - Starts with a random mapped GRN
         - Expected to end up with a lower cost mapped GRN  
-
         Template
         --------
         let 'T' be the temperature, 'init_cost' the total edge cost and 'n' the arc length.
-
         T           <- 100
         init_cost   <- total_edge_cost()
-
         while T>0.00001:
             choose random pe's:
                 peU,peV <- rand( [0, n²) ), rand( [0, n²) )
-
             map pe's to grn nodes:
                 u,v <- CGRA_2_GRN(peU), CGRA_2_GRN(peV)
-
             Calculate new cost:
                 if u is a node from grn then:
                     evaluate_move(u,v,peU,peV)                
                 if v is a node from grn then:
                     evaluate_move(v,u,peV,peU)
                 new_cost <- init_cost - local_cost + new_local_cost
-
             Calculate acceptance probability:
                 accProb <- exp(-1 * (dC/T) )
-
             if new_cost < init_cost or rand([0,...,1]) < accProb then:
                 make a swap between peU and peV
-
             decrease temperature
     """
     # INIT
@@ -199,17 +188,22 @@ def simulated_annealing(mp,data = False) -> None:
         # If it's a good swap
         is_good = new_cost<init_cost or rand.random()<accProb
         if is_good:
+            init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
             # Swap peU content with peV content
             mp.r_mapping.update({peU:v, peV:u})
             # progression of costs and num. of swaps
-            if mp.ctSwap%8==0: 
+            if mp.ctSwap%2==0: 
                 mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
+                mp.generate_wcase()
+                mp.generate_histogram()
+
             mp.ctSwap += 1
 
         # Decrease temp 
         T *= 0.999
 
+    mp.generate_wcase()
+
 
     if data == True:
         mp.get_all_stats()
-

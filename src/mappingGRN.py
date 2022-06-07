@@ -1,4 +1,5 @@
-from numpy import empty
+
+
 import src.include.json2graph as json2graph
 import src.algorithms.simulated_anealling as sa
 import networkx as nx
@@ -15,10 +16,10 @@ class mappingGRN:
         self.set_grn(graph)
         self.cost_table=[]
         self.hist = []
-        
+
         for i in self.cgra.nodes():
             self.cost_table.append(nx.single_source_dijkstra(self.cgra, i)[0])
-        
+
     # SETS
     def set_cgra(self, file_path) -> None:
         f               = open(file_path)
@@ -28,12 +29,16 @@ class mappingGRN:
         nx.set_edge_attributes(self.cgra,'penwidth(0.1)','style')
         nx.set_edge_attributes(self.cgra,'grey89','color')
         nx.set_edge_attributes(self.cgra,' ','tooltip')
+
+
         nx.set_node_attributes(self.cgra,'8','fontsize')
         nx.set_node_attributes(self.cgra,'#FFFFFF','fillcolor')
         nx.set_node_attributes(self.cgra,' ','label')
         nx.set_node_attributes(self.cgra,' ','tooltip')
         nx.set_node_attributes(self.cgra,'square','shape')
+
         f.close()
+
 
     def set_grn(self, graph: nx.DiGraph ) -> None:
         # init values
@@ -43,9 +48,12 @@ class mappingGRN:
         self.r_mapping = {}
         self.grn = graph
 
-        self.__random_mapping(4)
+        self.__random_mapping()
 
     # GETS
+    def get_cost(self,source,target):
+        return self.cost_table[source][target]
+
     def get_arc_size(self) -> int:
         return self.arc_size
 
@@ -63,15 +71,15 @@ class mappingGRN:
 
     def get_allcost(self) -> int:
         return self.allCost
-
+    
     def get_num_swaps(self) -> int:
         return self.ctSwap
 
-    def get_hist(self) -> dict:
-        return self.hist
-
     def get_dot(self):
         return json2graph.nx_2_dot(self.cgra)
+
+    def get_hist(self) -> dict:
+        return self.hist
 
     def get_all_stats(self) -> None:
         print(
@@ -82,16 +90,15 @@ class mappingGRN:
             f"\n{'Worst path cost:' : <30}{self.get_worstcase() : >10}"
         )
                                                                                 
+
     # METHODS
     def __random_mapping(self, seed=None) -> None: 
         """ Return a dictionary where the keys are nodes in the architecture and the values are random nodes from the graph.
-
             Parameters
             ----------
             graph: digraph
                 A networkX digraph
                 A gene regulatory network that will be used as values for de dictionary.
-
             Notes
             ----------  
         """
@@ -137,132 +144,56 @@ class mappingGRN:
         except: return node
         return key_list[position]
 
+
     def arc_2_grn(self,node):
         try: 
             return self.r_mapping[node]   
         except: return None
- 
-    def distance(self,source,target):
-        return self.cost_table[source][target]
 
-    def graph_visu(self) -> nx.DiGraph:
-        """ Graph visualization with .dot 
-
-            1. Rodar o simulated annealing
-            2. pegar todas as conexões da grn e rodar elas no crga
-            2.1. para cada gene -> key referente no dict (source e target)
-            2.2. rodar dijkstra_path
-
-
-            Notes
-            ---------
-            Ainda a fazer;
-            1. rodar dijkstra_path e salvar cada custo não repetido em um dict sendo:
-                key = custo e valule = cor
-
-                color[distance] -> #FF0000
-
-        """
-        sa.simulated_annealing(self,data=True)
-
-        # list of lists where each one is a path in the GRN on CGRA
-        paths = []
-        colors = {}
-        
-
-        # dict that count 0. how many times an PE is source
-        #                 1. how many times an PE is target
-        #                 2. how many times an PE is pasage for each PE
-        # dict[PE] = [0,1,2]
-        pe_stats = {pe : [0,0,0] for pe in range(self.get_arc_size())}
-                
-        for node in self.grn.nodes():
-            pe_source = self.grn_2_arc(node)
-            pe_stats[pe_source][0] += 1
-            for neighbor in self.grn.neighbors(node):
-                pe_target = self.grn_2_arc(neighbor)
-                pe_stats[pe_target][1] += 1
-                distance,path = nx.single_source_dijkstra(self.cgra,pe_source,pe_target)
-                if distance <= self.get_worstcase() * 0.5: continue
-                if distance not in colors.keys():
-                    while True:
-                        color = ["#"+''.join([rand.choice('ABCDEF0123456789') for i in range(6)])]
-                        if color not in colors.values(): break
-                    colors[distance] = color
-                paths.append([path,distance])
-            nx.set_node_attributes(self.cgra,{pe_source: {'fillcolor':'#666666'}}) #fill color for PEs with a gene in
-            
-
-        # add edge attributes:
-        #                     a) colors by path's distance
-        #                     b) tooltip showing path's source and target: pe_name(gene_name) to pe_name(gene_name) 
-        for path,distance in paths:
-            for path_node,i in zip(path,range(len(path))):
-                if path_node == path[-1]: break
-                if i > 0: pe_stats[path_node][2] += 1
-                self.cgra[path_node][path[i+1]]['color'] = colors[distance][0]
-                self.cgra[path_node][path[i+1]]['tooltip'] = "{}({}) to {}({})".format(path[0],
-                                                                                        self.arc_2_grn(path[0]),
-                                                                                        path[-1],
-                                                                                        self.arc_2_grn(path[-1]))
-
-        # add node attributes:
-        #                     a) fillcolor of PEs used as bridge
-        #                     b) label showing PEs stats: in degree, out degree, bridge count
-        #                     c) tooltip showing gene's name in PE
-        for pe in self.cgra.nodes():
-            grn_node = self.arc_2_grn(pe)
-            if (pe_stats[pe][0] == 0 and pe_stats[pe][1] == 0 and pe_stats[pe][2] != 0):
-                nx.set_node_attributes(self.cgra,{pe: {'fillcolor':'#bdbdbd'}}) #fill color for PEs used as bridge
-            nx.set_node_attributes(self.cgra, {pe: {'label':pe_stats[pe]}})
-            nx.set_node_attributes(self.cgra,{pe: {'tooltip':f"name: {grn_node},\nin_degree: {self.cgra.in_degree(pe)},\nout_degree: {self.cgra.out_degree(pe)}" }})
-
-
-        bridge_dict = {}
-        for k, v in pe_stats.items():
-            bridge_dict[k] = (v[0] + v[1] + v[2])
-
-        bridge_dict = {k: v for k, v in sorted(bridge_dict.items(), key=lambda item: item[1])}
-        values = list(bridge_dict.values())
-        max = values[-1]
-
-        for pe in bridge_dict.keys():
-            if bridge_dict[pe] == max : 
-                nx.set_node_attributes(self.cgra,{pe: {'shape': 'Msquare'}})
-
-        return self.get_cgra()
-
-    def generate_histogram(self) -> None:
+    def generate_histogram(self):
         hist = {i : 0 for i in range(1,self.get_worstcase()+1)}
+
         for node in self.grn.nodes():
             pe1 = self.grn_2_arc(node)
             for neighbor in self.grn.neighbors(node):
                 if neighbor == node: continue
+
                 pe2 = self.grn_2_arc(neighbor)
-                dist = self.distance(pe1,pe2)
+                dist = self.get_cost(pe1,pe2)
                 hist[dist]+=1
+
+
         self.hist.append(hist)
 
+    def generate_wcase(self):
+        wc = 0
+
+
+        for node in self.grn.nodes():
+            pe1 = self.grn_2_arc(node)
+            for neighbor in self.grn.neighbors(node):
+                if neighbor == node: continue
+
+                pe2 = self.grn_2_arc(neighbor)
+                dist = self.get_cost(pe1,pe2)
+                if dist > wc : wc = dist
+
+
+        self.wcase = wc
+ 
     def total_edge_cost(self) -> int:
         """ Returns the init_cost edge cost from peX to peY.
             Also calculates the worst case cost. """
 
         # Reset costs
-        self.cost,self.wcase=0,0
+        self.cost=0
         for edge in self.grn.edges():
             # Get edge xy from grn
             x = self.grn_2_arc(edge[0])
             y = self.grn_2_arc(edge[1])
 
             # Calcualte distance between peX and peY
-            dist_xy = self.distance(x,y)
-            
-            if dist_xy == 3 or dist_xy == 2:
-                self.cost += 1
-            else:
-                self.cost += dist_xy
-
-            # Calculate worst case
-            if dist_xy > self.wcase: self.wcase = dist_xy
+            dist_xy = self.get_cost(x,y)
+            self.cost += dist_xy
 
         return self.cost

@@ -1,10 +1,11 @@
 from grn2dot.grn2dot import Grn2dot
-import src.include.visualGraph as visualGraph
+#import src.include.visualGraph as visualGraph
 from src.mappingGRN import mappingGRN
-import src.algorithms.simulated_anealling as sm
+#import src.algorithms.simulated_anealling as sm
 from src.include.save_script import save_script
-import src.algorithms.simulated_anealling2t as sm2t
+#import src.algorithms.simulated_anealling2t as sm2t
 import os
+import src.algorithms.interlace as interlace
 
 
 def main():
@@ -20,9 +21,10 @@ def main():
     fname = aux[0]
 
     mapping = mappingGRN(arch_path, GRN)
-    sm2t.simulated_annealing(mapping,data=True)
+    #sm2t.simulated_annealing(mapping,data=True)
 
-
+    interlace.interlace(mapping)
+    
 
 
 
