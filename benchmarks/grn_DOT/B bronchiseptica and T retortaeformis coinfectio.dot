@@ -51,7 +51,6 @@ digraph  {
 " AD " [equation="  (  (  ( IgG && (  (  ( AD || IS )  )  )  ) && ! ( MPI_Bacterium  )  ) && ! ( NE_TRetortaeformis  )  ) "];
 " EL " [equation="  (  ( IS  ) && ! ( EL2  )  ) "];
 " Th2I_TRetortaeformis " [equation="  ( Th2II_TRetortaeformis ) "];
-IS;
 " IS ";
 " IgA_TRetortaeformis " -> " PIC ";
 " Bb " -> " Bb ";

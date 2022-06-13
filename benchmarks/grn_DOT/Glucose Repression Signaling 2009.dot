@@ -60,18 +60,6 @@ strict digraph  {
 " STD1 " [equation="  ! (  ( Rgt1p )  ) "];
 " GAL2 " [equation="  ( Gal11p )  || ( Gal4p ) "];
 " MLS1 " [equation="  ( Sip4p )  || ( Cat8p ) "];
-RGT1;
-GAL11;
-GLC7;
-glucose_ext;
-REG1;
-RGT2;
-GRR1;
-SNF1;
-SNF4;
-YCK1_2;
-galactose_ext;
-maltose_ext;
 " RGT2 ";
 " glucose_ext ";
 " GLC7 ";

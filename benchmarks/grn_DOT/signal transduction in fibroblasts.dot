@@ -129,15 +129,6 @@ digraph  {
 " Fak " [equation="  (  ( Src && (  (  ( Fak )  )  )  ) && ! ( PTEN && (  (  ( Fak )  )  )  )  )  || (  ( Integrins && (  (  ( Talin )  )  )  ) && ! ( PTEN && (  (  ( Fak )  )  )  )  ) "];
 " Raf " [equation="  ( Src && (  (  ( RKIP && Raf_Loc && PAK )  )  && (  ( ! Raf )  )  ) )  || ( Ras && (  (  ( Raf )  )  ) )  || ( Raf && (  (  ( ! PKA && ! Akt && ! Erk )  )  ) )  || ( PAK && (  (  ( ! Ras && ! Akt && ! Erk )  )  && (  ( Raf )  )  ) ) "];
 " IP3R1 " [equation="  (  (  (  ( Gbg_i  ) && ! ( Ca && (  (  ( IP3R1 )  )  && (  ( ! IP3 )  )  )  )  ) && ! ( CaM && (  (  ( IP3R1 )  )  && (  ( Ca )  )  )  )  ) && ! ( IP3R1 && (  (  ( CaM && Gbg_i )  )  && (  ( ! IP3 && ! PP2A && ! PKA && ! Ca )  )  )  )  )  || (  (  ( IP3 && (  (  ( Ca )  )  )  ) && ! ( Ca && (  (  ( IP3R1 )  )  && (  ( ! IP3 )  )  )  )  ) && ! ( CaM && (  (  ( IP3R1 )  )  && (  ( Ca )  )  )  )  )  || (  (  (  ( PKA  ) && ! ( Ca && (  (  ( IP3R1 )  )  && (  ( ! IP3 )  )  )  )  ) && ! ( CaM && (  (  ( IP3R1 )  )  && (  ( Ca )  )  )  )  ) && ! ( PP2A && (  (  ( IP3R1 )  )  )  )  ) "];
-ECM;
-ExtPump;
-EGF;
-alpha_sL;
-IL1_TNF;
-Stress;
-alpha_1213L;
-alpha_iL;
-alpha_qL;
 " ECM ";
 " alpha_sL ";
 " alpha_1213L ";

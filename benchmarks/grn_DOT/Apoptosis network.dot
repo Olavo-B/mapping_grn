@@ -38,8 +38,6 @@ strict digraph  {
 " TRAF " [equation="  ( TRADD ) "];
 " DNADamageEvent " [equation="  ( Cas3_dummy && (  (  ( Cas3 )  )  ) ) "];
 " Cas7 " [equation="  (  ( APC  ) && ! ( IAP  )  )  || (  ( Cas8  ) && ! ( IAP  )  ) "];
-GF;
-TNF;
 " TNF ";
 " GF ";
 " IAP " -> " Cas9 ";

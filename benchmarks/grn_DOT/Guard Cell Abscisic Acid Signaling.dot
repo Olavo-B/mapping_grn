@@ -39,10 +39,6 @@ strict digraph  {
 " InsP3 " [equation="  ( PLC ) "];
 " NO " [equation="  ( NOS && (  (  ( NIA12 )  )  ) ) "];
 " PLD " [equation="  ( GPA1 ) "];
-ABH1;
-ERA1;
-GCR1;
-ABA;
 " ABA ";
 " GCR1 ";
 " ERA1 ";

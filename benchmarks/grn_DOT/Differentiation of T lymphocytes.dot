@@ -40,15 +40,6 @@ digraph  {
 " RORgt " [equation="  (  (  (  ( SMAD2  ) && ! ( Tbet  )  ) && ! ( Foxp3  )  ) && ! ( GATA3  )  )  || (  (  (  ( RORgt  ) && ! ( Tbet  )  ) && ! ( Foxp3  )  ) && ! ( GATA3  )  )  || (  (  (  ( STAT3  ) && ! ( Tbet  )  ) && ! ( Foxp3  )  ) && ! ( GATA3  )  ) "];
 " IL4R " [equation="  (  ( IL4  ) && ! ( SOCS  )  ) "];
 " Prf1 " [equation="  ( Eomes ) "];
-TCR;
-IFNB;
-IL12;
-IL18;
-IL23;
-IL27;
-IL2;
-IL7;
-Dll1;
 " IL2 ";
 " IFNB ";
 " TCR ";

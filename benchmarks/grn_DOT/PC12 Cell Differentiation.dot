@@ -60,7 +60,6 @@ strict digraph  {
 " P53 " [equation="  ( AKT )  || ( JNK )  || ( ERK ) "];
 " ZFP36 " [equation="  ( JNK )  || ( ERK ) "];
 " TrkA " [equation="  ( NGF ) "];
-NGF;
 " G ";
 " i/o ";
 " NGF ";

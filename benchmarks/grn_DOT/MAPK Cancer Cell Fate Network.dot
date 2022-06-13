@@ -48,12 +48,6 @@ strict digraph  {
 " MTK1 " [equation="  ( GADD45 ) "];
 " SOS " [equation="  (  ( GRB2  ) && not ( RSK  )  ) "];
 " RAF " [equation="  (  (  ( RAS  ) && not ( AKT  )  ) && not ( ERK  )  )  || (  (  ( PKC  ) && not ( AKT  )  ) && not ( ERK  )  ) "];
-DNA_damage;
-EGFR_stimulus;
-FGFR3_stimulus;
-notDUSP1;
-TGFBR_stimulus;
-notMDM2;
 " notMDM2 ";
 " notDUSP1 ";
 " DNA_damage ";

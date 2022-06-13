@@ -61,12 +61,6 @@ strict digraph  {
 " HBEGF " [equation="  ( p38 )  || ( Erk ) "];
 " Mekk7 " [equation="  ( Mekk1 ) "];
 " JNK " [equation="  ( Mekk7 && (  (  ( Mkk4 )  )  ) )  || ( PAK2 ) "];
-PTEN;
-EGF;
-HGF;
-AKAP12;
-"PAI-1";
-DUSP1;
 " PAI-1 ";
 " AKAP12 ";
 " EGF ";

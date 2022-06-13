@@ -61,11 +61,6 @@ digraph  {
 " CYCE " [equation="  ( MYC ) "];
 " MYC " [equation="  ( pSTAT3 )  || ( MEKK )  || ( ERK ) "];
 " RAS " [equation="  ( IL6 && (  (  ( gp130 )  )  ) )  || ( SHP1 ) "];
-TNFAR;
-SHP1;
-Bort;
-TNFA;
-X;
 " Bort ";
 " TNFAR ";
 " TNFA ";

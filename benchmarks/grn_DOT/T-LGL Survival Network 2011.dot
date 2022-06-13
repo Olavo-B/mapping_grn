@@ -53,12 +53,6 @@ digraph  {
 " BID " [equation="  (  (  (  ( Caspase  ) && ! ( MCL1  )  ) && ! ( Apoptosis  )  ) && ! ( BclxL  )  )  || (  (  (  ( GZMB  ) && ! ( MCL1  )  ) && ! ( Apoptosis  )  ) && ! ( BclxL  )  ) "];
 " TNF " [equation="  (  ( NFKB  ) && ! ( Apoptosis  )  ) "];
 " P2 " [equation="  (  (  ( IFNG  ) && ! ( Stimuli2  )  ) && ! ( Apoptosis  )  )  || (  (  ( P2  ) && ! ( Stimuli2  )  ) && ! ( Apoptosis  )  ) "];
-IL15;
-Stimuli;
-CD45;
-Stimuli2;
-PDGF;
-TAX;
 " IL15 ";
 " CD45 ";
 " TAX ";
