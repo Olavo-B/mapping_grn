@@ -35,7 +35,10 @@ class mappingGRN:
     def set_cgra(self, file_path) -> None:
 
         f               = open(file_path)
-        self.cgra       = json2graph.make_digraph(json.load(f))
+        f_json          = json.load(f)
+        try: self.dimension  = f_json['dimension']
+        except: self.dimension = [None,None]
+        self.cgra       = json2graph.make_digraph(f_json)
         self.arc_size   = self.cgra.__len__()
         nx.set_edge_attributes(self.cgra,1,'weight')
         nx.set_edge_attributes(self.cgra,'penwidth(0.1)','style')
@@ -80,7 +83,10 @@ class mappingGRN:
             self.distance_list.put((-self.cost_table[pe_a][pe_b],pe_a,pe_b))
 
     # GETS
-
+    def get_dimension(self):
+        if self.dimension[0] != None: 
+            return self.dimension
+        else: return None
 
     def get_distance(self):
         return self.distance_list

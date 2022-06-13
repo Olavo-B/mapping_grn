@@ -299,4 +299,4 @@ def arch_struct(graph: nx.DiGraph):
 def get_dot(mp: mappingGRN,  arch_name: str,grn_name: str, pre_made_sa = True) -> None:
     arch = graph_visu(mp,pre_made_sa)
     dot,nodes = arch_struct(arch)
-    build_dot(dot,nodes,[7,7],arch_name, grn_name)
+    build_dot(dot,nodes,mp.get_dimension(),arch_name, grn_name)

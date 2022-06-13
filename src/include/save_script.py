@@ -265,8 +265,8 @@ def read_wesSA_file(file_path,grn_path,results_path):
         mp = mapping('arch.json',GRN[grn_index],dict)
         mp.generate_histogram()
         hist = mp.get_hist()
-        # visualization.get_dot(mp,'wesSA_mesh',grn_names[grn_index])
-        visualization.get_histogram(hist[0],'wesSA_mesh',grn_names[grn_index],'B_' + d)
+        visualization.get_dot(mp,'wesSA_mesh',grn_names[grn_index])
+        # visualization.get_histogram(hist[0],'wesSA_mesh',grn_names[grn_index],'B_' + d)
 
 
 
@@ -275,52 +275,6 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
 
 
-
-
-# def save_wesSA_data(file_path,results_path):
-
-#     grn2dot = Grn2dot('misc/grn_benchmarks-main/40-100/Apoptosis network/expr/expressions.ALL.txt')
-
-#     GRN = grn2dot.get_nx_digraph()
-#     x = {}
-
-
-#     # Getting all best results using results.txt files
-#     with open(results_path) as results:
-#         for line in results:
-#             data = line.split(', ')
-#             if data[0] == '1\n': break
-#             if data[0] == 'N': continue
-#             try:
-#                 (N,cost) = (data[1],data[4])
-#                 x[N] = cost
-#             except: continue 
-
-#     d = min(x, key=x.get)
-
-
-#     p = pathlib.Path(file_path)
-#     PATHS = list(p.glob('**/mesh/' + d + '.txt'))
-
-#     for file in PATHS:
-#         dict =      {}
-
-
-#         with open(file) as f:
-#             for line in f:
-#                 (key,val) = line.split()
-#                 if key == val:
-#                     create_json(int(key),int(val))
-#                     continue
-#                 dict[int(key)] = (" " + val + " ")
-
-
-#         mp = mapping('arch.json',GRN,dict)
-#         mp.generate_histogram()
-#         hist = mp.get_hist()
-#         visualization.get_dot(mp,'wesSA_mesh','Apoptosis network')
-#         visualization.get_histogram(hist[0],'wesSA_mesh','Apoptosis network','B_' + d)
-        
 
 
 

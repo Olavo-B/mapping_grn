@@ -43,7 +43,6 @@ def main():
     # visualization.get_histogram(list_hist[0],fname,'histogram',0)
     # visualization.get_dot(mapping,arch_path,'histogram')
 
-    # crate_json(7,7)
 
 
     ### GRN DOT ###
