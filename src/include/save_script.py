@@ -1,6 +1,7 @@
 import src.algorithms.simulated_anealling as sa
 from src.mappingGRN import mappingGRN as mapping
 import src.include.visualization as visualization
+from src.include.generate_arch import create_json
 from grn2dot.grn2dot import Grn2dot
 import statistics as st
 import networkx as nx
@@ -130,8 +131,17 @@ def get_grn_dot(grn_path) -> None:
     GRN,grn_names = GRN_paths(grn_path)
 
 
-    for grn,grn_name in zip(GRN,grn_names):
 
+    for graph,grn_name in zip(GRN,grn_names):
+
+
+        removed_nodes = []
+        for node in graph.nodes():
+            if graph.degree(node) == 0:
+                removed_nodes.append(node)
+
+        graph.remove_nodes_from(removed_nodes)
+        grn = graph
 
         dot = nx.nx_pydot.to_pydot(grn)
         dot_s = dot.to_string()
@@ -194,6 +204,122 @@ def save_script(grn_path, arch_path):
         data.to_excel(f"benchmarks/data_01-06-22.xlsx")
     except:
         print(data)
+
+
+def read_wesSA_file(file_path,grn_path,results_path):
+
+    GRN,grn_names = GRN_paths(grn_path)
+    p = pathlib.Path(results_path)
+    results_paths = list(p.glob('**/results.txt'))
+
+
+    # Getting best result one by one
+    for results,name,grn in zip(results_paths,grn_names,GRN):
+
+        aux = str(results)
+        aux = aux.split('/')
+        aux = aux[2]
+
+        grn_name = aux.replace('_', ' ')
+        grn_index = grn_names.index(grn_name)
+
+        if grn_name != grn_names[grn_index]:
+            print(f'ERRO\nwesSA file name: {grn_name} is different from GRN name: {grn_names[grn_index]}')
+            break
+
+
+
+        x = {}
+        with open(results) as results:
+            for line in results:
+                data = line.split(', ')
+                if data[0] == '1\n': break
+                if data[0] == 'N': continue
+                try:
+                    (N,cost) = (data[1],data[4])
+                    x[N] = cost
+                except: continue 
+
+        d = min(x, key=x.get)
+
+        # Getting txt that have the best result for wesSA
+        # aux is the GRN name (using _ as space)
+        # d is the id of the test [0...1000]
+        p = pathlib.Path(file_path)
+        PATHS = list(p.glob('**/' + aux + '/mesh/' + d + '.txt'))
+
+        path = PATHS[0]
+
+        print(path)
+
+        dict =      {}
+        with open(path) as f:
+            for line in f:
+                (key,val) = line.split()
+                if key == val: # creating arch for that dictionary
+                    create_json(int(key),int(val))
+                    continue
+                dict[int(key)] = (" " + val + " ")
+
+
+        mp = mapping('arch.json',GRN[grn_index],dict)
+        mp.generate_histogram()
+        hist = mp.get_hist()
+        # visualization.get_dot(mp,'wesSA_mesh',grn_names[grn_index])
+        visualization.get_histogram(hist[0],'wesSA_mesh',grn_names[grn_index],'B_' + d)
+
+
+
+
+
+
+
+
+
+
+# def save_wesSA_data(file_path,results_path):
+
+#     grn2dot = Grn2dot('misc/grn_benchmarks-main/40-100/Apoptosis network/expr/expressions.ALL.txt')
+
+#     GRN = grn2dot.get_nx_digraph()
+#     x = {}
+
+
+#     # Getting all best results using results.txt files
+#     with open(results_path) as results:
+#         for line in results:
+#             data = line.split(', ')
+#             if data[0] == '1\n': break
+#             if data[0] == 'N': continue
+#             try:
+#                 (N,cost) = (data[1],data[4])
+#                 x[N] = cost
+#             except: continue 
+
+#     d = min(x, key=x.get)
+
+
+#     p = pathlib.Path(file_path)
+#     PATHS = list(p.glob('**/mesh/' + d + '.txt'))
+
+#     for file in PATHS:
+#         dict =      {}
+
+
+#         with open(file) as f:
+#             for line in f:
+#                 (key,val) = line.split()
+#                 if key == val:
+#                     create_json(int(key),int(val))
+#                     continue
+#                 dict[int(key)] = (" " + val + " ")
+
+
+#         mp = mapping('arch.json',GRN,dict)
+#         mp.generate_histogram()
+#         hist = mp.get_hist()
+#         visualization.get_dot(mp,'wesSA_mesh','Apoptosis network')
+#         visualization.get_histogram(hist[0],'wesSA_mesh','Apoptosis network','B_' + d)
         
 
 

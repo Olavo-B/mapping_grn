@@ -91,22 +91,20 @@ def __fit(mp,u,v,peU,peV) -> bool:
     return False        
 
 
-def __randpes(mp, inf, sup):
-    # Choose a random pe between inf and sup
-    peU = rand.randint(inf,sup)
-    u   = mp.arc_2_grn(peU)
+def __randpes(mp: mappingGRN, inf, sup):
 
-    # Case peU is empty
-    if( mp.grn.has_node(u)==False ):
-        # Choose a random grn node
-        v = rand.choice( list( mp.r_mapping.values()) )
-        # and find it in arc
-        peV = mp.grn_2_arc(v)
-    else:
-        # Choose a random pe between inf and sup
-        peV = rand.randint(inf,sup)
+    # Get the GRN's edge that have the greatest distance value
+    distance_list = mp.get_distance()
+    ARCH = mp.get_cgra()
+    if distance_list.empty():
+        mp.set_distance_list()
+    peA,peB = distance_list.get()[1:]
 
-    return peU, peV
+
+    peC = rand.choice(list(ARCH.neighbors(peA)))
+
+
+    return peB,peC
 
 def __range(max,dec,min) -> int:
     a_n = math.log10(min)
@@ -119,7 +117,7 @@ def __range(max,dec,min) -> int:
 
 
 
-def simulated_annealing(mp,data = False) -> None:
+def simulated_annealing(mp: mappingGRN,data = False) -> None:
     """ 
         Aplies Simulated Annealing algorithm on a GRN mapped into CGRA
         - Starts with a random mapped GRN
@@ -167,6 +165,11 @@ def simulated_annealing(mp,data = False) -> None:
     ):
         # Choose random Pe's
         peU, peV = __randpes(mp,inf,sup)
+
+
+
+        #### DEBUG ####
+        # print(peU,peV)
         
         # map pe's to grn nodes
         u = mp.arc_2_grn(peU)
@@ -191,6 +194,8 @@ def simulated_annealing(mp,data = False) -> None:
             init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
             # Swap peU content with peV content
             mp.r_mapping.update({peU:v, peV:u})
+
+
             # progression of costs and num. of swaps
             if mp.ctSwap%2==0: 
                 mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
@@ -199,6 +204,7 @@ def simulated_annealing(mp,data = False) -> None:
 
             mp.ctSwap += 1
 
+        # mp.set_distance_list(peU,peV)
         # Decrease temp 
         T *= 0.999
 
