@@ -9,7 +9,7 @@ def ev_time(dist):
         return 1
     return dist
 
-def __evaluate_move(mp:mapping.mappingGRN,u,v,peU,peV) -> int:
+def __evaluate_move(mp,u,v,peU,peV) -> int:
         """ Returns the local cost from peU to all neighbors peW and
             the new local cost from peU (where peU is on peV) to
             to all neighbors peW. """
@@ -19,14 +19,16 @@ def __evaluate_move(mp:mapping.mappingGRN,u,v,peU,peV) -> int:
             for w in mp.grn.neighbors(u):
                 if w==u: continue # Calculate distance only for the neighbors of v
                 peW = mp.grn_2_arc(w)
-                localC      += ev_time( mp.distance(peU,peW) )
-                newLocalC   += ev_time( mp.distance(peV,peW) )    
+                
+                localC      += ev_time(mp.get_cost(peU,peW))
+                newLocalC   += ev_time(mp.get_cost(peV,peW))    
 
             for w in mp.grn.predecessors(u):
                 if w==u: continue # Calculate distance only for the neighbors of v
                 peW = mp.grn_2_arc(w)
-                localC      += ev_time( mp.distance(peW,peU) )
-                newLocalC   += ev_time( mp.distance(peW,peV) ) 
+                localC      += ev_time(mp.get_cost(peW,peU))
+                newLocalC   += ev_time(mp.get_cost(peW,peV)
+) 
 
         return localC, newLocalC
 
@@ -164,8 +166,8 @@ def simulated_annealing(mp:mapping.mappingGRN,data = False) -> None:
 
     # INIT
     grn = mp.get_grn()
-    T=100   # Start Simulated Annealing temperature
-    
+    T=100                               # Start Simulated Annealing temperature
+    init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
     # interval of pe's
     if grn.number_of_nodes() > 64:
         inf = 0
@@ -173,18 +175,14 @@ def simulated_annealing(mp:mapping.mappingGRN,data = False) -> None:
     else: 
         inf = 32
         sup = 144
-
     n_range = __range(T,0.999,0.00001)
-    
+
     for interation in tqdm(
         range(n_range),
         position=0,
         leave = True,
         desc= f"Simulated Annealing with {mp.grn.number_of_nodes()} genes and {mp.get_arc_size()} PEs:"
     ):
-        # Calculate current init_cost edge cost
-        curr_cost=mp.total_edge_cost()
-
         # Choose random Pe's
         peU, peV = __randpes(mp,inf,sup)
         
@@ -192,31 +190,35 @@ def simulated_annealing(mp:mapping.mappingGRN,data = False) -> None:
         u = mp.arc_2_grn(peU)
         v = mp.arc_2_grn(peV)
 
+
         # Verify if peU and peV has grn's nodes in it
         # and if grn's nodes fits in the PEs
         if u == None or v == None: continue
         if not __fit(mp,u,v,peU,peV): continue
 
         # Calculate new cost 
-        new_cost = __switching_cost(mp,u,v,peU,peV,curr_cost)
+        new_cost = __switching_cost(mp,u,v,peU,peV,init_cost)
 
         # Calculate acceptance probability
-        dC      = abs(new_cost - curr_cost) # variation of cost, delta C
-        accProb = math.exp(-dC/T)
+        dC      = abs(new_cost - init_cost) # variation of cost, delta C
+        accProb = math.exp(-1 * (dC/T) )
 
         # If it's a good swap
-        is_good = new_cost<curr_cost or rand.random()<accProb
+        is_good = new_cost<init_cost or rand.random()<accProb
         if is_good:
             # Swap peU content with peV content
             mp.r_mapping.update({peU:v, peV:u})
             # progression of costs and num. of swaps
-            if mp.ctSwap%10==0: 
-                mp.allCost.append([curr_cost,mp.ctSwap])
-                #mp.generate_histogram()
+            if mp.ctSwap%8==0: 
+                mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
+                mp.generate_wcase()
+                mp.generate_histogram()
             mp.ctSwap += 1
 
         # Decrease temp 
         T *= 0.999
+
+    #mp.generate_histogram()
 
     if data == True:
         mp.get_all_stats()

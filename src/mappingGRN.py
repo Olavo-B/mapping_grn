@@ -2,28 +2,43 @@
 
 import src.include.json2graph as json2graph
 import src.algorithms.simulated_anealling as sa
+from queue import PriorityQueue
+import random as rand
 import networkx as nx
 import json
 import math 
-import random as rand
 
 class mappingGRN:
 
     _instance = None
 
-    def __init__(self, file_path, graph) -> None:
+    def __init__(self, file_path, graph, pre_made = None) -> None:
         self.set_cgra(file_path)
-        self.set_grn(graph)
+        self.set_grn(graph,pre_made)
         self.cost_table=[]
         self.hist = []
+        self.distance_list = PriorityQueue()
 
         for i in self.cgra.nodes():
             self.cost_table.append(nx.single_source_dijkstra(self.cgra, i)[0])
 
+
+        for edge in self.grn.edges():
+            # Get edge xy from grn
+            pe_a = self.grn_2_arc(edge[0])
+            pe_b = self.grn_2_arc(edge[1])
+            self.distance_list.put((-self.cost_table[pe_a][pe_b],pe_a,pe_b))
+            
+
+
     # SETS
     def set_cgra(self, file_path) -> None:
+
         f               = open(file_path)
-        self.cgra       = json2graph.make_digraph(json.load(f))
+        f_json          = json.load(f)
+        try: self.dimension  = f_json['dimension']
+        except: self.dimension = [None,None]
+        self.cgra       = json2graph.make_digraph(f_json)
         self.arc_size   = self.cgra.__len__()
         nx.set_edge_attributes(self.cgra,1,'weight')
         nx.set_edge_attributes(self.cgra,'penwidth(0.1)','style')
@@ -39,18 +54,43 @@ class mappingGRN:
 
         f.close()
 
-
-    def set_grn(self, graph: nx.DiGraph ) -> None:
+    def set_grn(self, graph: nx.DiGraph, pre_made ) -> None:
         # init values
         self.wcase = self.cost = 0
         self.ctSwap = 0
         self.allCost=[]
         self.r_mapping = {}
+        removed_nodes = []
+        for node in graph.nodes():
+            if graph.degree(node) == 0:
+                removed_nodes.append(node)
+
+        graph.remove_nodes_from(removed_nodes)
         self.grn = graph
 
-        self.__random_mapping()
+
+        self.__random_mapping(pre_made=pre_made)
+
+    def set_distance_list(self):
+        # self.distance_list.put((self.cost_table[x][y],x,y))
+
+
+
+        for edge in self.grn.edges():
+            # Get edge xy from grn
+            pe_a = self.grn_2_arc(edge[0])
+            pe_b = self.grn_2_arc(edge[1])
+            self.distance_list.put((-self.cost_table[pe_a][pe_b],pe_a,pe_b))
 
     # GETS
+    def get_dimension(self):
+        if self.dimension[0] != None: 
+            return self.dimension
+        else: return None
+
+    def get_distance(self):
+        return self.distance_list
+
     def get_cost(self,source,target):
         return self.cost_table[source][target]
 
@@ -64,14 +104,17 @@ class mappingGRN:
         return self.grn
 
     def get_mapped_grn(self) -> dict:
+        ''' Return r_mapping
+        '''
         return self.r_mapping
 
     def get_worstcase(self) -> int:
+        self.generate_wcase()
         return self.wcase
 
     def get_allcost(self) -> int:
         return self.allCost
-    
+  
     def get_num_swaps(self) -> int:
         return self.ctSwap
 
@@ -80,6 +123,17 @@ class mappingGRN:
 
     def get_hist(self) -> dict:
         return self.hist
+
+    def display_arc(self):
+        bline = math.sqrt(self.arc_size)
+        for i in range(self.arc_size):
+            if i%bline==0 : print()
+            node = self.arc_2_grn(i)
+            if(self.grn.has_node(node)):
+                print(node[1], end=' ')
+            else: 
+                print('-', end=' ')
+        print()
 
     def get_all_stats(self) -> None:
         print(
@@ -92,7 +146,8 @@ class mappingGRN:
                                                                                 
 
     # METHODS
-    def __random_mapping(self, seed=None) -> None: 
+
+    def __random_mapping(self, seed=None, pre_made=None, fit = False) -> None: 
         """ Return a dictionary where the keys are nodes in the architecture and the values are random nodes from the graph.
             Parameters
             ----------
@@ -102,13 +157,16 @@ class mappingGRN:
             Notes
             ----------  
         """
+        if pre_made != None:
+            self.r_mapping = pre_made
+            return
         if seed != None:
             rand.seed(seed)
 
         empty_pe = []
         # create a list with all pes
 
-        if self.grn.number_of_nodes() < 64:
+        if self.grn.number_of_nodes() < 64 and fit:
             for i in range(2,10):
                 for j in range(2,10):
                     empty_pe.append(15 * i + j) # fixado para arch 15x15
@@ -140,10 +198,12 @@ class mappingGRN:
         key_list = list(self.r_mapping.keys())
         val_list = list(self.r_mapping.values())
 
-        try:    position = val_list.index(node)
-        except: return node
+        try:    
+            position = val_list.index(node)
+        except:
+            print(f"Did't find pe position for {node}, returning itself")
+            return node
         return key_list[position]
-
 
     def arc_2_grn(self,node):
         try: 
@@ -197,3 +257,4 @@ class mappingGRN:
             self.cost += dist_xy
 
         return self.cost
+

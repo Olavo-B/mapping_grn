@@ -1,60 +1,54 @@
-from grn2dot.grn2dot import Grn2dot
-#import src.include.visualGraph as visualGraph
-from src.mappingGRN import mappingGRN
-#import src.algorithms.simulated_anealling as sm
+from src.include.save_script import generate_metadata
+from src.include.save_script import read_wesSA_file
+from src.include.generate_arch import create_json
 from src.include.save_script import save_script
-#import src.algorithms.simulated_anealling2t as sm2t
-import os
-import src.algorithms.interlace as interlace
+from src.algorithms.interlace import interlace
+from src.mappingGRN import mappingGRN
+from grn2dot.grn2dot import Grn2dot
+
+import src.algorithms.simulated_anealling2t as sm2t
+import src.include.visualization as visualization
+import src.algorithms.simulated_anealling as sm
+import math
+
+
+
 
 
 def main():
-
-    os.system('clear')
-
+    
+    # INIT #
     grn2dot = Grn2dot('misc/Benchmark_53.txt')
     GRN = grn2dot.get_nx_digraph()
-    arch_path = 'misc/arch/15x15/cgra_mesh_ho_15x15.json'
+    N = GRN.number_of_nodes()
+    n = 1 + math.isqrt(N)
+    create_json(n,n)
+    mapping = mappingGRN('arch.json', GRN)
 
-    aux = arch_path.split('/')
-    aux = aux[1].split('.')
-    fname = aux[0]
-
-    mapping = mappingGRN(arch_path, GRN)
-    #sm2t.simulated_annealing(mapping,data=True)
-
-    interlace.interlace(mapping)
+    # INTERLACE #
+    interlace(mapping)
     
+    # UPDATE BEST INTERLACE #
+    wc = mapping.get_worstcase()
+    ans = {}
 
+    while True:
+        interlace(mapping)
+        curr_wc = mapping.get_worstcase()
+        if curr_wc < wc:
+            wc = curr_wc
+            ans = mapping.get_mapped_grn()
+            print(f"update worst case to {wc}.")
+            f = open('misc/best_interlace.txt','w')
+            f.write(str(wc))
+            f.write("\n"+str(ans))
+            f.close()
 
+    # visualization.get_dot(mapping,'interlace_ex','ex')
+    # mapping.generate_histogram()
+    # h = mapping.get_hist()
+    # visualization.get_histogram(h[0],'interlace_ex','ex',0)
 
-
-
-    # mapping2t = mappingGRN(arch_path, GRN)
-    
-    # print(mapping.get_mapped_grn())
-    # print(mapping2t.get_mapped_grn())
-
-    # print("SM")
-    # sm.simulated_annealing(mapping,data=True)
-    # print("SM2T")
-
-    # ### CGRA VISUALIZATION ###
-    #arch = mapping.graph_visu()
-    #dot,nodes = visualGraph.arch_struct(arch)
-    #visualGraph.build_dot(dot,nodes,[15,15],fname)
-
-    #print(mapping.get_mapped_grn())
-    
-    # ### GRAPH TOTAL_COST X N_SWAPS ###
-    # visualGraph.sa_curve(mapping.get_allcost(),fname)
-
-    # # ### HISTOGRAM OF N TIMES A PE WAS USED ###
-    # # # visualGraph.num_pes_used(10,mapping,GRN)
-
-    # # print(mapping.get_num_swaps())
-
-    # save_script("misc\\grn_benchmarks-main","misc\\arch\\15x15")
 
 if __name__ == '__main__':
     main()
