@@ -1,0 +1,2 @@
+2
+{7: ' CtrA ', 4: ' DnaA ', 6: ' CcrM ', 8: ' SciP ', 5: ' GcrA '}

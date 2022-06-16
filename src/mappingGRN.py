@@ -104,8 +104,6 @@ class mappingGRN:
         return self.grn
 
     def get_mapped_grn(self) -> dict:
-        ''' Return r_mapping
-        '''
         return self.r_mapping
 
     def get_worstcase(self) -> int:
@@ -123,17 +121,6 @@ class mappingGRN:
 
     def get_hist(self) -> dict:
         return self.hist
-
-    def display_arc(self):
-        bline = math.sqrt(self.arc_size)
-        for i in range(self.arc_size):
-            if i%bline==0 : print()
-            node = self.arc_2_grn(i)
-            if(self.grn.has_node(node)):
-                print(node[1], end=' ')
-            else: 
-                print('-', end=' ')
-        print()
 
     def get_all_stats(self) -> None:
         print(

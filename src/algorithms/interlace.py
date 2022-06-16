@@ -10,7 +10,7 @@ import math
 
 def map(data:DataMap,node,parent):
     if parent==None:
-
+ 
         # get random pe
         visited=data.pes()
         pelist=[]
@@ -60,29 +60,34 @@ def bfs(src, data:DataMap):
                 neigh_in_degree.append( (indeg, neighbor) )
                 data.visit_node(neighbor)
         neigh_in_degree.sort(key=lambda x: x[0], reverse=True)
-   
+    
         for neigh in neigh_in_degree:
             newNode = data.make_pair(neigh[1],node)
             q.put(newNode)
 
-            
 def interlace(mp:mappingGRN):
     
     data = DataMap(mp)
-    
+
     best_in_degree = []
     for node in mp.get_grn().nodes:
         best_in_degree.append( (mp.get_grn().in_degree(node), node) )
     best_in_degree.sort(key=lambda x: x[0], reverse=True)
 
     num_grn_nodes = data.mp.get_grn().number_of_nodes() 
-    num_cgra_nodes=data.mp.get_cgra().number_of_nodes()
+    num_cgra_nodes= data.mp.get_cgra().number_of_nodes()
 
     if num_grn_nodes > num_cgra_nodes:  
         print(f"Cannot map this grn. grn_nodes::{num_grn_nodes}> cgra_nodes::{num_cgra_nodes}")
         return
 
-    # while node list not empty...
-    for src in best_in_degree:
-        if not data.is_node_visited(src[1]):
-            bfs(src[1], data)
+    bfs(best_in_degree[0][1], data)
+
+
+
+
+    # # while node list not empty...
+    # for src in best_in_degree:
+    #     if not data.is_node_visited(src[1]):
+    #         print("RESTART")
+    #         bfs(src[1], data)
