@@ -45,10 +45,6 @@ def main():
 
 
 
-    ### GRN DOT ###
-    # get_grn_dot("misc/grn_benchmarks-main")
-
-
 
     ### BENCHMARK ###
     # save_script("misc/grn_benchmarks-main","misc/arch/15x15")

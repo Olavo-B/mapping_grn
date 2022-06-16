@@ -263,10 +263,39 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
 
         mp = mapping('arch.json',GRN[grn_index],dict)
-        mp.generate_histogram()
-        hist = mp.get_hist()
-        visualization.get_dot(mp,'wesSA_mesh',grn_names[grn_index])
+        # mp.generate_histogram()
+        # hist = mp.get_hist()
+        # visualization.get_dot(mp,'wesSA_mesh',grn_names[grn_index])
         # visualization.get_histogram(hist[0],'wesSA_mesh',grn_names[grn_index],'B_' + d)
+
+        # getting grn with edge colors by dist in arch
+        grn = GRN[grn_index]
+        dict_label,dict_color = mp.get_edge_attr()
+        nx.set_edge_attributes(grn,dict_label,'label')
+        nx.set_edge_attributes(grn,dict_color,'color')
+        dot = nx.nx_pydot.to_pydot(grn)
+        s_dot = dot.to_string()
+
+
+
+        path = f"benchmarks/{grn_names[grn_index]}/DOT"  
+        file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
+
+
+        isExist = os.path.exists(path)
+
+        if not isExist:
+    
+            # Create a new directory because it does not exist 
+            os.makedirs(path)
+            print("The new directory is created!")
+
+        completeName = os.path.join(path, file_name)
+
+        with open(completeName, 'w') as f:
+            f.write(s_dot)
+        f.close()
+
 
 
 

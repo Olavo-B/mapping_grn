@@ -143,6 +143,24 @@ class mappingGRN:
             f"\n{'Total cost:' : <30}{self.total_edge_cost() : >10}",
             f"\n{'Worst path cost:' : <30}{self.get_worstcase() : >10}"
         )
+
+    def get_edge_attr(self) -> dict:
+        
+        wc = self.get_worstcase()
+        dist_label,dist_color = {},{}
+        for edge in self.grn.edges():
+            pe1 = self.grn_2_arc(edge[0])
+            pe2 = self.grn_2_arc(edge[1])
+
+            dist = self.get_cost(pe1,pe2)
+            dist_label[edge] = dist
+
+            if dist == wc:
+                dist_color[edge] = 'red'
+            else:
+                dist_color[edge] = 'black'
+
+        return dist_label,dist_color
                                                                                 
 
     # METHODS
