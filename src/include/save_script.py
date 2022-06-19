@@ -7,7 +7,6 @@ import statistics as st
 import networkx as nx
 from glob import glob
 import pandas as pd
-import numpy as np
 import pathlib
 import os
 
@@ -214,7 +213,7 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
 
     # Getting best result one by one
-    for results,name,grn in zip(results_paths,grn_names,GRN):
+    for results in results_paths:
 
         aux = str(results)
         aux = aux.split('/')
@@ -257,16 +256,16 @@ def read_wesSA_file(file_path,grn_path,results_path):
             for line in f:
                 (key,val) = line.split()
                 if key == val: # creating arch for that dictionary
-                    create_json(int(key),int(val))
+                    arch_path = create_json(int(key),int(val))
                     continue
                 dict[int(key)] = (" " + val + " ")
 
 
-        mp = mapping('arch.json',GRN[grn_index],dict)
-        # mp.generate_histogram()
-        # hist = mp.get_hist()
-        # visualization.get_dot(mp,'wesSA_mesh',grn_names[grn_index])
-        # visualization.get_histogram(hist[0],'wesSA_mesh',grn_names[grn_index],'B_' + d)
+        mp = mapping(arch_path,GRN[grn_index],dict)
+        mp.generate_histogram()
+        hist = mp.get_hist()
+        visualization.get_dot(mp,'wesSA_mesh',f'{grn_names[grn_index]}/weSA/DOT')
+        visualization.get_histogram(hist[0],'wesSA_mesh',f'{grn_names[grn_index]}/weSA/hist','B_' + d)
 
         # getting grn with edge colors by dist in arch
         grn = GRN[grn_index]
@@ -280,7 +279,6 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
         path = f"benchmarks/{grn_names[grn_index]}/DOT"  
         file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
-
 
         isExist = os.path.exists(path)
 

@@ -1,7 +1,4 @@
-
-
 import src.include.json2graph as json2graph
-import src.algorithms.simulated_anealling as sa
 from queue import PriorityQueue
 import random as rand
 import networkx as nx
@@ -46,7 +43,7 @@ class mappingGRN:
         nx.set_edge_attributes(self.cgra,' ','tooltip')
 
 
-        nx.set_node_attributes(self.cgra,'8','fontsize')
+        nx.set_node_attributes(self.cgra,'10','fontsize')
         nx.set_node_attributes(self.cgra,'#FFFFFF','fillcolor')
         nx.set_node_attributes(self.cgra,' ','label')
         nx.set_node_attributes(self.cgra,' ','tooltip')

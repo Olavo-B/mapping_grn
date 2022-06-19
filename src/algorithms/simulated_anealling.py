@@ -146,6 +146,7 @@ def simulated_annealing(mp: mappingGRN,data = False) -> None:
     """
     # INIT
     grn = mp.get_grn()
+    arch = mp.get_cgra()
     T=100                               # Start Simulated Annealing temperature
     init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
     # interval of pe's
@@ -163,46 +164,45 @@ def simulated_annealing(mp: mappingGRN,data = False) -> None:
         leave = True,
         desc= f"Simulated Annealing with {mp.grn.number_of_nodes()} genes and {mp.get_arc_size()} PEs:"
     ):
-        # Choose random Pe's
-        peU, peV = __randpes(mp,inf,sup)
+        for i in range(arch.number_of_nodes()):
+            # Choose random Pe's
+            peU, peV = __randpes(mp,inf,sup)
+
+            #### DEBUG ####
+            # print(peU,peV)
+            
+            # map pe's to grn nodes
+            u = mp.arc_2_grn(peU)
+            v = mp.arc_2_grn(peV)
 
 
+            # Verify if peU and peV has grn's nodes in it
+            # and if grn's nodes fits in the PEs
+            if u == None or v == None: continue
+            if not __fit(mp,u,v,peU,peV): continue
 
-        #### DEBUG ####
-        # print(peU,peV)
-        
-        # map pe's to grn nodes
-        u = mp.arc_2_grn(peU)
-        v = mp.arc_2_grn(peV)
+            # Calculate new cost 
+            new_cost = __switching_cost(mp,u,v,peU,peV,init_cost)
 
+            # Calculate acceptance probability
+            dC      = abs(new_cost - init_cost) # variation of cost, delta C
+            accProb = math.exp(-1 * (dC/T) )
 
-        # Verify if peU and peV has grn's nodes in it
-        # and if grn's nodes fits in the PEs
-        if u == None or v == None: continue
-        if not __fit(mp,u,v,peU,peV): continue
-
-        # Calculate new cost 
-        new_cost = __switching_cost(mp,u,v,peU,peV,init_cost)
-
-        # Calculate acceptance probability
-        dC      = abs(new_cost - init_cost) # variation of cost, delta C
-        accProb = math.exp(-1 * (dC/T) )
-
-        # If it's a good swap
-        is_good = new_cost<init_cost or rand.random()<accProb
-        if is_good:
-            init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
-            # Swap peU content with peV content
-            mp.r_mapping.update({peU:v, peV:u})
+            # If it's a good swap
+            is_good = new_cost<init_cost or rand.random()<accProb
+            if is_good:
+                init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
+                # Swap peU content with peV content
+                mp.r_mapping.update({peU:v, peV:u})
 
 
-            # progression of costs and num. of swaps
-            if mp.ctSwap%2==0: 
-                mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
-                mp.generate_wcase()
-                mp.generate_histogram()
+                # progression of costs and num. of swaps
+                if mp.ctSwap%2==0: 
+                    mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
+                    mp.generate_wcase()
+                    mp.generate_histogram()
 
-            mp.ctSwap += 1
+                mp.ctSwap += 1
 
         # mp.set_distance_list(peU,peV)
         # Decrease temp 
