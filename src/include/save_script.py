@@ -209,31 +209,47 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
     GRN,grn_names = GRN_paths(grn_path)
     p = pathlib.Path(results_path)
-    results_paths = list(p.glob('**/results.txt'))
+    results_paths = list(p.glob('**/results*.txt'))
 
 
     # Getting best result one by one
     for results in results_paths:
 
+        # Getting grn name
         aux = str(results)
         aux = aux.split('/')
-        aux = aux[2]
+        aux_grn_name = aux[2]
 
-        grn_name = aux.replace('_', ' ')
+        grn_name = aux_grn_name.replace('_', ' ')
         grn_index = grn_names.index(grn_name)
 
         if grn_name != grn_names[grn_index]:
             print(f'ERRO\nwesSA file name: {grn_name} is different from GRN name: {grn_names[grn_index]}')
             break
 
+        # Getting arch type
+        aux_arch_type = aux[3].split('.')
+        aux_arch_type = aux_arch_type[0].split('_')
+
+        arch_type = aux_arch_type[1]
 
 
+        print(f'Processing {grn_name} with a {arch_type} arch')
+        
+        # Chess is not implemented yet
+        if arch_type == 'chess':
+            continue
+
+
+        # Getting a dict where the key is the test id {N} 
+        # and the value is its result {cost}.
+        # And then finding the key with minimum value of cost
         x = {}
         with open(results) as results:
             for line in results:
                 data = line.split(', ')
-                if data[0] == '1\n': break
-                if data[0] == 'N': continue
+                # if data[0] == '1\n': break 
+                if data[0] == 'Name': continue
                 try:
                     (N,cost) = (data[1],data[4])
                     x[N] = cost
@@ -242,10 +258,10 @@ def read_wesSA_file(file_path,grn_path,results_path):
         d = min(x, key=x.get)
 
         # Getting txt that have the best result for wesSA
-        # aux is the GRN name (using _ as space)
+        # aux_grn_name is the GRN name (using _ as space)
         # d is the id of the test [0...1000]
         p = pathlib.Path(file_path)
-        PATHS = list(p.glob('**/' + aux + '/mesh/' + d + '.txt'))
+        PATHS = list(p.glob(f'**/{aux_grn_name}/{arch_type}/{d}.txt'))
 
         path = PATHS[0]
 
@@ -256,43 +272,44 @@ def read_wesSA_file(file_path,grn_path,results_path):
             for line in f:
                 (key,val) = line.split()
                 if key == val: # creating arch for that dictionary
-                    arch_path = create_json(int(key),int(val))
+                    arch_path = create_json(int(key),int(val),arch_type=arch_type)
                     continue
                 dict[int(key)] = (" " + val + " ")
 
 
+        # getting histogram and dot of the best solution from wesSA
         mp = mapping(arch_path,GRN[grn_index],dict)
         mp.generate_histogram()
         hist = mp.get_hist()
-        visualization.get_dot(mp,'wesSA_mesh',f'{grn_names[grn_index]}/weSA/DOT')
-        visualization.get_histogram(hist[0],'wesSA_mesh',f'{grn_names[grn_index]}/weSA/hist','B_' + d)
+        visualization.get_dot(mp,f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA')
+        visualization.get_histogram(hist[0],f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA','B_' + d)
 
         # getting grn with edge colors by dist in arch
-        grn = GRN[grn_index]
-        dict_label,dict_color = mp.get_edge_attr()
-        nx.set_edge_attributes(grn,dict_label,'label')
-        nx.set_edge_attributes(grn,dict_color,'color')
-        dot = nx.nx_pydot.to_pydot(grn)
-        s_dot = dot.to_string()
+        # grn = GRN[grn_index]
+        # dict_label,dict_color = mp.get_edge_attr()
+        # nx.set_edge_attributes(grn,dict_label,'label')
+        # nx.set_edge_attributes(grn,dict_color,'color')
+        # dot = nx.nx_pydot.to_pydot(grn)
+        # s_dot = dot.to_string()
 
 
 
-        path = f"benchmarks/{grn_names[grn_index]}/DOT"  
-        file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
+        # path = f"benchmarks/{grn_names[grn_index]}/DOT"  
+        # file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
 
-        isExist = os.path.exists(path)
+        # isExist = os.path.exists(path)
 
-        if not isExist:
+        # if not isExist:
     
-            # Create a new directory because it does not exist 
-            os.makedirs(path)
-            print("The new directory is created!")
+        #     # Create a new directory because it does not exist 
+        #     os.makedirs(path)
+        #     print("The new directory is created!")
 
-        completeName = os.path.join(path, file_name)
+        # completeName = os.path.join(path, file_name)
 
-        with open(completeName, 'w') as f:
-            f.write(s_dot)
-        f.close()
+        # with open(completeName, 'w') as f:
+        #     f.write(s_dot)
+        # f.close()
 
 
 

@@ -10,21 +10,21 @@ def create_json(x:int, y:int, arch_type='mesh'):
         g = nx.convert_node_labels_to_integers(g,ordering='sorted')
 
 
-    elif arch_type == '1hop':
+    elif arch_type == '1-hop':
         g = nx.grid_2d_graph(x,y,create_using= nx.DiGraph)
 
         for node in g.nodes():
             if ((node[0] + 2),node[1]) in g.nodes():
-                print(f'creating edge from {node} to {((node[0] + 2),node[1])}')
+                # print(f'creating edge from {node} to {((node[0] + 2),node[1])}')
                 g.add_edge(node,((node[0] + 2),node[1]))
             if ((node[0]-2),node[1]) in g.nodes():
-                print(f'creating edge from {node} to {((node[0] - 2),node[1])}')
+                # print(f'creating edge from {node} to {((node[0] - 2),node[1])}')
                 g.add_edge(node,((node[0] - 2),node[1]))
             if (node[0],(node[1]+2)) in g.nodes():
-                print(f'creating edge from {node} to {(node[0],(node[1]+2))}')
+                # print(f'creating edge from {node} to {(node[0],(node[1]+2))}')
                 g.add_edge(node,(node[0],(node[1]+2)))
             if (node[0],(node[1]-2)) in g.nodes():
-                print(f'creating edge from {node} to {(node[0],(node[1]-2))}')
+                # print(f'creating edge from {node} to {(node[0],(node[1]-2))}')
                 g.add_edge(node,(node[0],(node[1]-2))) 
             
         g = nx.convert_node_labels_to_integers(g,ordering='sorted')
