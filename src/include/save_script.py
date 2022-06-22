@@ -78,7 +78,6 @@ def get_data(row: list, mp: mapping,  arch_name: str,grn_name: str) -> list:
 
     return row
 
-
 def generate_metadata(grn_path) -> None:
 
     GRN,grn_names = GRN_paths(grn_path)
@@ -166,7 +165,6 @@ def get_grn_dot(grn_path) -> None:
             f.write(dot_s)
         f.close()
 
-
 def save_script(grn_path, arch_path):
 
     GRN,grn_names = GRN_paths(grn_path)
@@ -203,7 +201,6 @@ def save_script(grn_path, arch_path):
         data.to_excel(f"benchmarks/data_01-06-22.xlsx")
     except:
         print(data)
-
 
 def read_wesSA_file(file_path,grn_path,results_path):
 
@@ -290,31 +287,31 @@ def read_wesSA_file(file_path,grn_path,results_path):
         visualization.get_histogram(hist[0],f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA','B_' + d)
 
         # getting grn with edge colors by dist in arch
-        grn = GRN[grn_index]
-        dict_label,dict_color = mp.get_edge_attr()
-        nx.set_edge_attributes(grn,dict_label,'label')
-        nx.set_edge_attributes(grn,dict_color,'color')
-        dot = nx.nx_pydot.to_pydot(grn)
-        s_dot = dot.to_string()
+        # grn = GRN[grn_index]
+        # dict_label,dict_color = mp.get_edge_attr()
+        # nx.set_edge_attributes(grn,dict_label,'label')
+        # nx.set_edge_attributes(grn,dict_color,'color')
+        # dot = nx.nx_pydot.to_pydot(grn)
+        # s_dot = dot.to_string()
 
 
 
-        path = f"benchmarks/{grn_names[grn_index]}/DOT"  
-        file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
+        # path = f"benchmarks/{grn_names[grn_index]}/DOT"  
+        # file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
 
-        isExist = os.path.exists(path)
+        # isExist = os.path.exists(path)
 
-        if not isExist:
+        # if not isExist:
     
-            # Create a new directory because it does not exist 
-            os.makedirs(path)
-            print("The new directory is created!")
+        #     # Create a new directory because it does not exist 
+        #     os.makedirs(path)
+        #     print("The new directory is created!")
 
-        completeName = os.path.join(path, file_name)
+        # completeName = os.path.join(path, file_name)
 
-        with open(completeName, 'w') as f:
-            f.write(s_dot)
-        f.close()
+        # with open(completeName, 'w') as f:
+        #     f.write(s_dot)
+        # f.close()
 
 
 
