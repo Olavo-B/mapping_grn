@@ -18,8 +18,7 @@ def main():
 
     # GRN = grn2dot.get_nx_digraph()
 
-    # create_json(8,8,'1hop')
-    # arch_path = 'arch_1hop_8x8.json'
+    # arch_path = create_json(8,8,'chess')
 
     # aux = arch_path.split('/')
     # aux = aux[3].split('.')
@@ -40,7 +39,7 @@ def main():
 
     # visualization.get_histogram(list_hist[-1],fname,'histogram',len(list_hist))
     # visualization.get_histogram(list_hist[0],fname,'histogram',0)
-    # visualization.get_dot(mapping,arch_path,'histogram')
+    # visualization.get_dot(mapping,'8x8_chess','histogram')
 
 
 

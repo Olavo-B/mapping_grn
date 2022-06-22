@@ -234,13 +234,8 @@ def read_wesSA_file(file_path,grn_path,results_path):
         arch_type = aux_arch_type[1]
 
 
-        print(f'Processing {grn_name} with a {arch_type} arch')
+        print(f'Processing {grn_name} with a {arch_type}')
         
-        # Chess is not implemented yet
-        if arch_type == 'chess':
-            continue
-
-
         # Getting a dict where the key is the test id {N} 
         # and the value is its result {cost}.
         # And then finding the key with minimum value of cost
@@ -257,6 +252,18 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
         d = min(x, key=x.get)
 
+
+        # Getting histogram of best worst case by count
+        hist = {}
+        for value in x.values():
+            hist[value] = 0
+        hist = dict(sorted(hist.items()))
+        for value in x.values():
+            hist[value] += 1
+        visualization.get_histogram(hist,f'Solution_histogram_for_{arch_type}',f'{grn_names[grn_index]}/weSA',0)
+
+
+
         # Getting txt that have the best result for wesSA
         # aux_grn_name is the GRN name (using _ as space)
         # d is the id of the test [0...1000]
@@ -265,51 +272,49 @@ def read_wesSA_file(file_path,grn_path,results_path):
 
         path = PATHS[0]
 
-        print(path)
-
-        dict =      {}
+        dic =      {}
         with open(path) as f:
             for line in f:
                 (key,val) = line.split()
                 if key == val: # creating arch for that dictionary
                     arch_path = create_json(int(key),int(val),arch_type=arch_type)
                     continue
-                dict[int(key)] = (" " + val + " ")
+                dic[int(key)] = (" " + val + " ")
 
 
         # getting histogram and dot of the best solution from wesSA
-        mp = mapping(arch_path,GRN[grn_index],dict)
+        mp = mapping(arch_path,GRN[grn_index],dic)
         mp.generate_histogram()
         hist = mp.get_hist()
         visualization.get_dot(mp,f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA')
         visualization.get_histogram(hist[0],f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA','B_' + d)
 
         # getting grn with edge colors by dist in arch
-        # grn = GRN[grn_index]
-        # dict_label,dict_color = mp.get_edge_attr()
-        # nx.set_edge_attributes(grn,dict_label,'label')
-        # nx.set_edge_attributes(grn,dict_color,'color')
-        # dot = nx.nx_pydot.to_pydot(grn)
-        # s_dot = dot.to_string()
+        grn = GRN[grn_index]
+        dict_label,dict_color = mp.get_edge_attr()
+        nx.set_edge_attributes(grn,dict_label,'label')
+        nx.set_edge_attributes(grn,dict_color,'color')
+        dot = nx.nx_pydot.to_pydot(grn)
+        s_dot = dot.to_string()
 
 
 
-        # path = f"benchmarks/{grn_names[grn_index]}/DOT"  
-        # file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
+        path = f"benchmarks/{grn_names[grn_index]}/DOT"  
+        file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
 
-        # isExist = os.path.exists(path)
+        isExist = os.path.exists(path)
 
-        # if not isExist:
+        if not isExist:
     
-        #     # Create a new directory because it does not exist 
-        #     os.makedirs(path)
-        #     print("The new directory is created!")
+            # Create a new directory because it does not exist 
+            os.makedirs(path)
+            print("The new directory is created!")
 
-        # completeName = os.path.join(path, file_name)
+        completeName = os.path.join(path, file_name)
 
-        # with open(completeName, 'w') as f:
-        #     f.write(s_dot)
-        # f.close()
+        with open(completeName, 'w') as f:
+            f.write(s_dot)
+        f.close()
 
 
 
