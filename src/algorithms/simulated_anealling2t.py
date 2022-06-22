@@ -101,9 +101,7 @@ def __randpes(mp: mappingGRN, inf, sup):
         mp.set_distance_list()
     peA,peB = distance_list.get()[1:]
 
-
     peC = rand.choice(list(ARCH.neighbors(peA)))
-
 
     return peB,peC
 

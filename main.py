@@ -24,7 +24,6 @@ import networkx as nx
     # GRN.add_edges_from(edges)
 #########
 
-
 def best_interlace(mp:mappingGRN):
     # UPDATE BEST INTERLACE #
     interlace(mp)
@@ -62,14 +61,16 @@ def best_sa(mp:mappingGRN):
 def main():
     
     # INIT #
-    grn2dot = Grn2dot('misc/Benchmark_5.txt')
+    grn2dot = Grn2dot('misc/Benchmark_53.txt')
     GRN = grn2dot.get_nx_digraph()
     N = GRN.number_of_nodes()
     n = 1 + math.isqrt(N)
     create_json(n,n)
 
     mapping = mappingGRN('arch.json', GRN)
+    
     interlace(mapping)
+    #simulated_annealing(mapping)
 
     #best_sa(mapping)
     #best_interlace(mapping)
@@ -78,7 +79,6 @@ def main():
     # mapping.generate_histogram()
     # h = mapping.get_hist()
     # visualization.get_histogram(h[0],'interlace_ex','ex',0)
-
 
 if __name__ == '__main__':
     main()
