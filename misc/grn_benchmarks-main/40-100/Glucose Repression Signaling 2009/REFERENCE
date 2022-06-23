@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 REFERENCE
 
 Christensen TS, Oliveira AP, and Nielsen J.Reconstruction and logical modeling of glucose repression signaling pathways in Saccharomyces cerevisiae.BMC Syst Biol 2009 Jan 143; 7.pmid:19144179
@@ -14,21 +13,4 @@ Bibtext
   pages={7},
   year={2009},
   publisher={BioMed Central}
-=======
-REFERENCE
-
-Christensen TS, Oliveira AP, and Nielsen J.Reconstruction and logical modeling of glucose repression signaling pathways in Saccharomyces cerevisiae.BMC Syst Biol 2009 Jan 143; 7.pmid:19144179
-
-Bibtext
-
-@article{christensen2009reconstruction,
-  title={Reconstruction and logical modeling of glucose repression signaling pathways in Saccharomyces cerevisiae},
-  author={Christensen, Tobias S and Oliveira, Ana Paula and Nielsen, Jens},
-  journal={BMC systems biology},
-  volume={3},
-  number={1},
-  pages={7},
-  year={2009},
-  publisher={BioMed Central}
->>>>>>> my_updates_olavo
 }

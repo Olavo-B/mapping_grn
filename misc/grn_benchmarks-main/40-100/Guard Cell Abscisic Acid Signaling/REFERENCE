@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 REFERENCE
 
 Li S, Assmann SM, and Albert R.Predicting essential components of signal transduction networks: a dynamic model of guard cell abscisic acid signaling.PLoS Biol 2006 Oct4; (10) e312.pmid:16968132
@@ -14,21 +13,4 @@ Bibtext
   pages={e312},
   year={2006},
   publisher={Public Library of Science}
-=======
-REFERENCE
-
-Li S, Assmann SM, and Albert R.Predicting essential components of signal transduction networks: a dynamic model of guard cell abscisic acid signaling.PLoS Biol 2006 Oct4; (10) e312.pmid:16968132
-
-Bibtext
-
-@article{li2006predicting,
-  title={Predicting essential components of signal transduction networks: a dynamic model of guard cell abscisic acid signaling},
-  author={Li, Song and Assmann, Sarah M and Albert, R{\'e}ka},
-  journal={PLoS biology},
-  volume={4},
-  number={10},
-  pages={e312},
-  year={2006},
-  publisher={Public Library of Science}
->>>>>>> my_updates_olavo
 }
