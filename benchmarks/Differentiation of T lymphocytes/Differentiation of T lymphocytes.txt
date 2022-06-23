@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 Number of nodes in GRN:                         59 
 Number of edges in GRN:                         97 
 Average in-degree:              1.6440677966101696 
 Average out-degree:             1.6440677966101696 
 Max in-degree:                                   9 
 Max out-degree:                                  8
+=======
+Number of nodes in GRN:                         59 
+Number of edges in GRN:                         97 
+Average in-degree:              1.6440677966101696 
+Average out-degree:             1.6440677966101696 
+Max in-degree:                                   9 
+Max out-degree:                                  8
+>>>>>>> my_updates_olavo

@@ -1,7 +1,4 @@
-
-
 import src.include.json2graph as json2graph
-import src.algorithms.simulated_anealling as sa
 from queue import PriorityQueue
 import random as rand
 import networkx as nx
@@ -46,7 +43,7 @@ class mappingGRN:
         nx.set_edge_attributes(self.cgra,' ','tooltip')
 
 
-        nx.set_node_attributes(self.cgra,'8','fontsize')
+        nx.set_node_attributes(self.cgra,'10','fontsize')
         nx.set_node_attributes(self.cgra,'#FFFFFF','fillcolor')
         nx.set_node_attributes(self.cgra,' ','label')
         nx.set_node_attributes(self.cgra,' ','tooltip')
@@ -104,6 +101,8 @@ class mappingGRN:
         return self.grn
 
     def get_mapped_grn(self) -> dict:
+        ''' Return r_mapping
+        '''
         return self.r_mapping
 
     def get_worstcase(self) -> int:
@@ -122,6 +121,17 @@ class mappingGRN:
     def get_hist(self) -> dict:
         return self.hist
 
+    def display_arc(self):
+        bline = math.sqrt(self.arc_size)
+        for i in range(self.arc_size):
+            if i%bline==0 : print()
+            node = self.arc_2_grn(i)
+            if(self.grn.has_node(node)):
+                print(node[1], end=' ')
+            else: 
+                print('-', end=' ')
+        print()
+
     def get_all_stats(self) -> None:
         print(
             f"{'Number of PEs in CGRA:' : <30}{self.get_arc_size() : >10}",
@@ -130,6 +140,24 @@ class mappingGRN:
             f"\n{'Total cost:' : <30}{self.total_edge_cost() : >10}",
             f"\n{'Worst path cost:' : <30}{self.get_worstcase() : >10}"
         )
+
+    def get_edge_attr(self) -> dict:
+        
+        wc = self.get_worstcase()
+        dist_label,dist_color = {},{}
+        for edge in self.grn.edges():
+            pe1 = self.grn_2_arc(edge[0])
+            pe2 = self.grn_2_arc(edge[1])
+
+            dist = self.get_cost(pe1,pe2)
+            dist_label[edge] = dist
+
+            if dist == wc:
+                dist_color[edge] = 'red'
+            else:
+                dist_color[edge] = 'black'
+
+        return dist_label,dist_color
                                                                                 
 
     # METHODS

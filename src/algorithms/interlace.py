@@ -1,10 +1,10 @@
+from tqdm import tqdm
 from src.mappingGRN import mappingGRN
-from src.include.data_map import DataMap
-from queue import Queue
-
 import networkx as nx
 import random as rand
 import math
+from src.include.data_map import DataMap
+from queue import Queue
 
 ## https://excalidraw.com/#json=5AAr7ZdQjEew31PkTHZO6,72cYyJfUvGAXyOuyg2Ws6g
 
