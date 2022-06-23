@@ -1,0 +1,58 @@
+name,arch. type,worst,median,mean
+Glucose Repression Signaling 2009,mesh,3,1.0,1.6132075471698113
+Glucose Repression Signaling 2009,1-hop,3,1.0,1.5349056603773585
+Glucose Repression Signaling 2009,chess,3,1.0,1.3358490566037735
+Yeast Apoptosis,mesh,10,1.0,1.6743542435424354
+Yeast Apoptosis,1-hop,4,1.0,1.4973214285714285
+Yeast Apoptosis,chess,4,1.0,1.4794642857142857
+Bortezomib Responses in U266 Human Myelo,mesh,10,2.0,1.7728731942215088
+Bortezomib Responses in U266 Human Myelo,1-hop,5,1.0,1.4038461538461537
+Bortezomib Responses in U266 Human Myelo,chess,4,1.0,1.58
+Lymphopoiesis Regulatory Network,1-hop,11,1.0,1.6734177215189874
+Lymphopoiesis Regulatory Network,chess,4,1.0,1.3246835443037974
+Treatment of Castration-Resistant Prostate Ca,mesh,4,1,1.5564950038431975
+Treatment of Castration-Resistant Prostate Ca,1-hop,3,1.0,1.4507692307692308
+Treatment of Castration-Resistant Prostate Ca,chess,3,1.0,1.3753846153846154
+macrophave activation,mesh,12,2.0,2.693443591258122
+macrophave activation,1-hop,12,1.0,2.159692898272553
+macrophave activation,chess,11,2.0,2.061228406909789
+Cholesterol Regulatory Pathway,mesh,11,1.0,1.7059471365638768
+Cholesterol Regulatory Pathway,chess,3,1.0,1.0093023255813953
+T-LGL Survival Network 2011,mesh,10,1.0,1.8106267029972751
+T-LGL Survival Network 2011,1-hop,10,2.0,2.1764102564102563
+T-LGL Survival Network 2011,chess,4,2.0,1.716923076923077
+IL-6 Signalling,mesh,10,2.0,1.8941860465116278
+IL-6 Signalling,1-hop,10,1.0,1.6093959731543623
+IL-6 Signalling,chess,5,1.0,1.5550335570469798
+B bronchiseptica and T retortaeformis coinfectio,mesh,5,2.0,1.7525399129172714
+B bronchiseptica and T retortaeformis coinfectio,1-hop,5,1.0,1.3562962962962963
+PC12 Cell Differentiation,mesh,10,1.0,1.5845921450151057
+PC12 Cell Differentiation,1-hop,10,2.0,1.7899082568807339
+PC12 Cell Differentiation,chess,4,1.0,1.4431192660550458
+Apoptosis network,mesh,4,1.0,1.605708245243129
+Apoptosis network,1-hop,4,1.0,1.3726027397260274
+Apoptosis network,chess,4,1.0,1.4027397260273973
+CD4 T cell signaling,mesh,10,2,2.1238167360848164
+CD4 T cell signaling,1-hop,10,1.0,1.5994219653179191
+CD4 T cell signaling,chess,11,1.0,1.7523121387283238
+Guard Cell Abscisic Acid Signaling,1-hop,4,1.0,1.6
+Guard Cell Abscisic Acid Signaling,chess,3,1.0,1.3025641025641026
+IGVH mutations in chronic lymphocytic leukemia,mesh,10,1.0,1.5783132530120483
+IGVH mutations in chronic lymphocytic leukemia,1-hop,10,1.0,1.3953333333333333
+IGVH mutations in chronic lymphocytic leukemia,chess,5,1.0,1.232
+EGFR & ErbB Signaling,mesh,10,2.0,1.960244648318043
+EGFR & ErbB Signaling,1-hop,10,1.0,1.7303964757709251
+EGFR & ErbB Signaling,chess,4,2.0,1.7669603524229074
+HGF Signaling in Keratinocytes,mesh,4,1.0,1.6863084922010398
+HGF Signaling in Keratinocytes,chess,3,1.0,1.245631067961165
+MAPK Cancer Cell Fate Network,mesh,10,1.0,1.6155339805825242
+MAPK Cancer Cell Fate Network,1-hop,4,1.0,1.616504854368932
+MAPK Cancer Cell Fate Network,chess,5,1.0,1.4009708737864077
+Differentiation of T lymphocytes,mesh,5,1.0,1.491
+Differentiation of T lymphocytes,1-hop,3,1.0,1.2051546391752577
+Differentiation of T lymphocytes,chess,4,1.0,1.2123711340206185
+signal transduction in fibroblasts,mesh,10,2.0,2.775098640946953
+signal transduction in fibroblasts,1-hop,10,2.0,1.8972527472527472
+Erb-reception,mesh,12,2.0,2.300699300699301
+Erb-reception,1-hop,13,2.0,3.04496336996337
+Erb-reception,chess,10,2.0,2.1367216117216117
