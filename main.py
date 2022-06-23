@@ -7,7 +7,7 @@ from src.include.save_script import save_script
 from src.mappingGRN import mappingGRN
 from grn2dot.grn2dot import Grn2dot
 from src.include.generate_arch import create_json
-
+from src.include.generate_ml_df import generate_df
 
 
 
@@ -47,8 +47,9 @@ def main():
 
     ### BENCHMARK ###
     # save_script("misc/grn_benchmarks-main","misc/arch/15x15")
-    read_wesSA_file('misc/results','misc/grn_benchmarks-main','misc/results')
+    #read_wesSA_file('misc/results','misc/grn_benchmarks-main','misc/results')
 
+    generate_df('misc/results','misc/grn_benchmarks-main','misc/results')
 
 
 
