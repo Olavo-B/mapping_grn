@@ -158,6 +158,47 @@ class mappingGRN:
                 dist_color[edge] = 'black'
 
         return dist_label,dist_color
+
+    def get_dist_by_edge(self) -> dict:
+        ''' Return a dictionary keying by a grn's edge and value by the distance of the nodes
+            that compose this edge
+        '''
+        wc = self.get_worstcase()
+        dict = {}
+        for edge in self.grn.edges():
+            pe1 = self.grn_2_arc(edge[0])
+            pe2 = self.grn_2_arc(edge[1])
+
+            dist = self.get_cost(pe1,pe2)
+            dict[edge] = str(dist)
+
+        return dict
+    
+    def get__path_count(self) -> dict:
+        ''' Return a dictionary keying by the number of routings a PE have within it
+            and it's value by the count of PE with that routing count
+        '''
+
+        dict = {}
+        aux_dict = {k:0 for k in self.cgra.nodes()}
+
+        for edge in self.grn.edges():
+            pe1 = self.grn_2_arc(edge[0])
+            pe2 = self.grn_2_arc(edge[1])
+
+            path = nx.dijkstra_path(self.cgra,pe1,pe2)
+            for node in path:
+                if node == path[0] or node == path[-1]: continue
+                aux_dict[node] += 1
+
+        for value in aux_dict.values():
+            try:
+                dict[value] += 1
+            except:
+                dict[value] = 1
+
+        return aux_dict
+
                                                                                 
 
     # METHODS
@@ -269,6 +310,8 @@ class mappingGRN:
 
             # Calcualte distance between peX and peY
             dist_xy = self.get_cost(x,y)
+
+            
             self.cost += dist_xy
 
         return self.cost

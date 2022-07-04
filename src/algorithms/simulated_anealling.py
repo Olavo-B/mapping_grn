@@ -5,6 +5,9 @@ import random as rand
 import math
 
 
+# https://excalidraw.com/#json=TbwCgiM5c7AadsVB5gfGf,gJhOGner741U4jgSB5g75g
+
+
 def __evaluate_move(mp: mappingGRN,u,v,peU,peV) -> int:
         """ Returns the local cost from peU to all neighbors peW and
             the new local cost from peU (where peU is on peV) to
@@ -147,7 +150,7 @@ def simulated_annealing(mp: mappingGRN,data = False) -> None:
     # INIT
     grn = mp.get_grn()
     arch = mp.get_cgra()
-    T=100                               # Start Simulated Annealing temperature
+    T=100                             # Start Simulated Annealing temperature
     init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
     # interval of pe's
     if grn.number_of_nodes() > 64:
@@ -164,50 +167,48 @@ def simulated_annealing(mp: mappingGRN,data = False) -> None:
         leave = True,
         desc= f"Simulated Annealing with {mp.grn.number_of_nodes()} genes and {mp.get_arc_size()} PEs:"
     ):
-        for i in range(arch.number_of_nodes()):
-            # Choose random Pe's
-            peU, peV = __randpes(mp,inf,sup)
-
-            #### DEBUG ####
-            # print(peU,peV)
-            
-            # map pe's to grn nodes
-            u = mp.arc_2_grn(peU)
-            v = mp.arc_2_grn(peV)
+        if (T < 0.00001): break
+        # Choose as peU a pe that have a gene in it, and all other pes as peV
+        for peU in arch.nodes():
+            for peV in range(peU,arch.number_of_nodes()):
+                # map pe's to grn nodes
+                u = mp.arc_2_grn(peU)
+                v = mp.arc_2_grn(peV)
 
 
-            # Verify if peU and peV has grn's nodes in it
-            # and if grn's nodes fits in the PEs
-            if u == None or v == None: continue
-            if not __fit(mp,u,v,peU,peV): continue
+                # Verify if peU and peV has grn's nodes in it
+                # and if grn's nodes fits in the PEs
+                if u == None and v == None: continue
+                # if not __fit(mp,u,v,peU,peV): continue
 
-            # Calculate new cost 
-            new_cost = __switching_cost(mp,u,v,peU,peV,init_cost)
+                # Calculate new cost 
+                new_cost = __switching_cost(mp,u,v,peU,peV,init_cost)
 
-            # Calculate acceptance probability
-            dC      = abs(new_cost - init_cost) # variation of cost, delta C
-            accProb = math.exp(-1 * (dC/T) )
+                # Calculate acceptance probability
+                dC      = abs(new_cost - init_cost) # variation of cost, delta C
+                accProb = math.exp(-1 * (dC/T) )
 
-            # If it's a good swap
-            is_good = new_cost<init_cost or rand.random()<accProb
-            if is_good:
-                init_cost=mp.total_edge_cost()    # Calculate current init_cost edge cost
-                # Swap peU content with peV content
-                mp.r_mapping.update({peU:v, peV:u})
+                # If it's a good swap
+                is_good = new_cost<init_cost or rand.random()<accProb
+                if is_good:
+                    # Swap peU content with peV content
+                    mp.r_mapping.update({peU:v, peV:u})
+                    init_cost=new_cost    # Calculate current init_cost edge cost
 
 
-                # progression of costs and num. of swaps
-                if mp.ctSwap%2==0: 
-                    mp.allCost.append([mp.total_edge_cost(),mp.ctSwap])
-                    mp.generate_wcase()
-                    mp.generate_histogram()
+                    # progression of costs and num. of swaps
+                    # if mp.ctSwap%2==0: 
+                    #     mp.allCost.append([new_cost,mp.ctSwap])
+                    #     mp.generate_wcase()
+                    #     mp.generate_histogram()
 
-                mp.ctSwap += 1
+                    mp.ctSwap += 1
 
-        # mp.set_distance_list(peU,peV)
-        # Decrease temp 
-        T *= 0.999
+            # mp.set_distance_list(peU,peV)
+            # Decrease temp 
+            T *= 0.999
 
+    mp.generate_histogram()
     mp.generate_wcase()
 
 
