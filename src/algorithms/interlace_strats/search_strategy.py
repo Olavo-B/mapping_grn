@@ -27,6 +27,7 @@ class dfsStrategy(SearchStrategy):
             elif memo[neighbor]: # Se foi, checa se ciclo 
                 if (neighbor,node) not in path:
                     notes[neighbor].append(node)
+                    notes[node].append(neighbor)
         memo[node]=False
 
     def search(self, n, adj, nodes) -> None:
@@ -34,7 +35,7 @@ class dfsStrategy(SearchStrategy):
         memo = [False]*n
         notes=[ [] for i in range(n) ]
         path=[]
-
+        
         for node in nodes: # <- Trocar por lista com prioridade de nó!!
             if not visited[node]: 
                 self.__is_cycle(node, adj, visited, memo, path, notes)

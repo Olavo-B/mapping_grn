@@ -72,24 +72,51 @@ def main():
     for edge in grn.edges:
         edges.append((label[edge[0]], label[edge[1]]))
 
+    # TEST CASE #
+    # dim=3
+
+    # # Create sample grn
+    # nodes = [0,1,2,3,4,5,6]
+    # edges = [(5,2),(6,5),(4,5),(1,5),
+    #          (3,4),(2,3),(2,1),(0,1)]
+    # graph=nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
 
-    min_wc=maxsize
-    dcross = DoubleCrossing(grn=graph, arch=cgra, dim=dim)
-    dcross.set_edge_strat(es.DecisionTreeMesh(graph,cgra))
-    for i in range(10000):
-        if i%10==0:
-            print(f"it:{i} - wc:{min_wc}")
-        if min_wc==1: break
-        #dcross.debug() 
-        map = dcross.traverse()
-        wc = dcross.worst_case()
-        #print(f"map: {map}\nwc: {wc}")
-        min_wc=min(wc,min_wc)
+    # # Create sample arch
+    # nodes = [0,1,2,3,4,5,6,7,8,9,10,11]
+    # edges = [(0,1),(0,4),(1,2),(1,5),(2,3),(2,6),(3,7),
+    #         (4,5),(4,8),(5,6),(5,9),(6,7),
+    #         (6,10),(7,11),(8,9),(9,10),(10,11)]
+    # cgra=nx.Graph()
+    # cgra.add_nodes_from(nodes)
+    # cgra.add_edges_from(edges)
 
-    print(min_wc)
-    print(map)
+    dcross = DoubleCrossing(grn=graph, arch=cgra, dim=dim)
+    map = dcross.traverse()
+    # wc = dcross.worst_case()
+    # print(f"map: {map}")
+    # print(f"wc: {wc}")
+
+    #dcross.set_edge_strat(es.DecisionTreeMesh(graph,cgra))
+    
+    # min_wc=maxsize
+    # min_map={}
+    # for i in range(100000):
+    #     dcross = DoubleCrossing(grn=graph, arch=cgra, dim=dim)
+    #     print(i)
+    #     if min_wc==1: break
+    #     #dcross.debug() 
+
+    #     map = dcross.traverse()
+    #     wc = dcross.worst_case()
+
+    #     if wc<min_wc:
+    #         min_wc=wc
+    #         min_map=map
+
+    # print(f"map: {min_map}")
+    # print(f"wc: {min_wc}")
     
 if __name__ == '__main__':
     main()

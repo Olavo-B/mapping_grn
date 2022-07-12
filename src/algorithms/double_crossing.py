@@ -6,6 +6,8 @@ import random as rand
 from queue import Queue
 from collections import Counter
 
+COST_MAX=4
+
 class DoubleCrossing:
     def __init__(self,grn:nx.DiGraph,arch:nx.Graph,dim:int) -> None: # arch graph para mesh!!!!!
         self.__grn=grn
@@ -31,20 +33,34 @@ class DoubleCrossing:
     # TRAVERSE
     def traverse(self) -> None:
         path,notes= self.__exploration()
+
+        # print("\nPATH")
+        # for p in path:
+        #     print(f"{p} -> ", end='')
+        # print('\n')
+
+        # print("NOTES")
+        # k=0
+        # for n in notes:
+        #     print(f"{k} - {n}")
+        #     k+=1
+        
         map = self.__placement(path,notes)
         return map
 
     def __exploration(self) -> tuple:
 
-        edges = list(self.__grn.edges)
-        edges.sort(key=self.__edge_strat.strat, reverse=True)
+        # edges = list(self.__grn.edges)
+        # edges.sort(key=self.__edge_strat.strat, reverse=True)
         
-        nodes=[]
-        for edge in edges:
-            nodes.append(edge[0])
-            nodes.append(edge[1])
-        nodes = list(dict.fromkeys(nodes))
-        
+        # nodes=[]
+        # for edge in edges:
+        #     nodes.append(edge[0])
+        #     nodes.append(edge[1])
+        # nodes = list(dict.fromkeys(nodes))
+
+        nodes = list(self.__grn.nodes)
+        nodes.sort(key=self.__edge_strat.strat, reverse=True)
         n = len(nodes)
 
         return self.__search_strat.search(n, self.__adj, nodes)
@@ -52,42 +68,74 @@ class DoubleCrossing:
     def __placement(self, path, notes) -> dict:
         
         # Place source
-        source=path[0][0]
-        val=self.__grn.degree(source)
-        min_val, pos=maxsize,0
-        for i in range(len(self.__grid_cost)):            
-            diff=val-self.__grid_cost[i]
-            if diff<min_val: 
-                min_val=diff
-                pos=i
-                if diff==0: break
-        self.__place(source,pos)
+        src=path[0][0]
+        val=self.__grn.degree(src)
+        
+        init_pos=[]
+
+        print(val)
+
+        for pe in self.__arch.nodes:
+            if val>COST_MAX or self.__grid_cost[pe] >= val:
+                init_pos.append(pe)
+
+        pos = rand.choice(init_pos)
+        self.__place(src,pos)
         self.__update_grid(pos)
 
         # Place seq
+
+        print(f"PATH {path}")
+        print(f"NOTES {notes}")
+        print(f"ADJ")
+        k=0
+        for i in self.__adj:
+            print(f"{k} - {i}")
+            k+=1
+
         for node in path:
             src=node[0]
             tar=node[1]
 
             # Vizinhos de par
-            neighbor_src = self.__bfs_neighbors(src)
-            #print("NEIGH",list(set(neighbor_src)))
+            neighbor_src=[]
+            self.__bfs_neighbors(self.__map[src],neighbor_src)
 
             # Anotações + vizinhos par
-            possible_pe=list(set(neighbor_src + notes[tar]))
+            # Se inteseção não é vazia, faça 
+            poss_notes=[]
+            for node in notes[tar]:
+                adj = list(self.__arch.neighbors(self.__map[node]))
+                for i in adj:
+                    if not self.__is_mapped(i):
+                        poss_notes.append(i)
+            
+            possible_pe=list(set(neighbor_src)&set(poss_notes))
+            if not possible_pe:
+                possible_pe=neighbor_src+poss_notes
 
             # Grid cost
             val=self.__grn.degree(tar)
             pos=0
             fit=[]
             for node in possible_pe:
-                if self.__grid_cost[node]>=val:
+                if val>COST_MAX or self.__grid_cost[node]>=val:
                     fit.append(node)
 
-            pos = rand.choice(possible_pe+fit)
-
+            pos = rand.choice(list(set(possible_pe+fit)))
             self.__place(tar,pos)
             self.__update_grid(pos)
+
+            print('\n==================')
+            print(f'{src} mapped in {self.__map[src]}')
+            print(f'src {src}/ tar {tar}')
+            print(f"neighbors_{src}: {neighbor_src}")
+            print(f"notes: {notes[tar]} -> {poss_notes}")
+            print(f"fit: {fit}")
+            print(f"inter: {list(set(possible_pe+fit))}")
+            print('==================\n')
+
+            #print(f"FINAL LIST {src}",list(set(possible_pe+fit)))
 
         return self.__map.copy()
 
@@ -133,33 +181,22 @@ class DoubleCrossing:
                 dist = self.__cost_table[pe1][pe2]
                 if dist > wc : wc = dist
         return wc
+    
+    def __is_mapped(self,node):
+        return self.__grid_cost[node]<=0
 
-    def __bfs_neighbors(self,v):
+    def __bfs_neighbors(self,v,neighbors):
+        for neighbor in self.__arch.neighbors(v):
+            if not self.__is_mapped(neighbor):
+                neighbors.append(neighbor)
 
-        visited=[False]*self.__arch.number_of_nodes()
-        neighbors=[]
-        q = Queue()
+        if neighbors:
+            return
 
-        visited[v]=True
-        q.put(v)
-        
-        min_dist=maxsize
+        for neighbor in self.__arch.neighbors(v):
+            self.__bfs_neighbors(neighbor,neighbors)
 
-        while not q.empty():
-            node = q.get()
-            for neighbor in self.__arch.neighbors(node):
-                if self.__grid_cost[neighbor]<=0 and not visited[neighbor]:
-                    q.put(neighbor)
-                    visited[neighbor]=True
-                else:
-                    dist=self.__cost_table[node][neighbor]
-                    if dist<min_dist:
-                        min_dist=dist
-                        neighbors.append(neighbor)
-                    
-        
-        return neighbors
-
+    
     def debug(self) -> None:
         print(f"-- GRN {self.__grn}")
         print(f"-- ARCH. {self.__arch}")

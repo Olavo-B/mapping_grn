@@ -16,7 +16,8 @@ class InDegreeStrategy:
 
     def create_adj(self):
         adj=[]
-        for node in self.__grn.nodes:
+
+        for node in self.__grn.nodes():
             neigh_node = list(set(list(self.__grn.neighbors(node))+list(self.__grn.predecessors(node))))
             neigh_node.sort(key=self.strat, reverse=True)
             adj.append(neigh_node)
