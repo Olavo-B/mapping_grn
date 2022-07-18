@@ -19,7 +19,6 @@ class mappingGRN:
         for i in self.cgra.nodes():
             self.cost_table.append(nx.single_source_dijkstra(self.cgra, i)[0])
 
-
         for edge in self.grn.edges():
             # Get edge xy from grn
             pe_a = self.grn_2_arc(edge[0])
@@ -58,13 +57,14 @@ class mappingGRN:
         self.allCost=[]
         self.r_mapping = {}
         removed_nodes = []
+
         for node in graph.nodes():
             if graph.degree(node) == 0:
                 removed_nodes.append(node)
 
         graph.remove_nodes_from(removed_nodes)
-        self.grn = graph
 
+        self.grn = graph
 
         self.__random_mapping(pre_made=pre_made)
 

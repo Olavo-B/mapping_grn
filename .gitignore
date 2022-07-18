@@ -1,5 +1,5 @@
 **/desktop*.ini
-**/misc/results
+**/misc/results_**
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -202,11 +202,16 @@ def save_script(grn_path, arch_path):
     except:
         print(data)
 
-def read_wesSA_file(file_path,grn_path,results_path):
+def read_wesSA_file(file_path,grn_path):
 
     GRN,grn_names = GRN_paths(grn_path)
-    p = pathlib.Path(results_path)
+    p = pathlib.Path(file_path)
     results_paths = list(p.glob('**/results*.txt'))
+
+    aux = str(file_path)
+    aux = aux.split('/')
+    aux = aux[-1].split('_')
+    used_algorithm = aux[-1]
 
 
     # Getting best result one by one
@@ -257,7 +262,7 @@ def read_wesSA_file(file_path,grn_path,results_path):
         hist = dict(sorted(hist.items()))
         for value in x.values():
             hist[value] += 1
-        visualization.get_histogram(hist,f'Solution_histogram_for_{arch_type}',f'{grn_names[grn_index]}/weSA',0)
+        visualization.get_histogram(hist,f'Solution_histogram_for_{arch_type}',f'{grn_names[grn_index]}/weSA_new',0)
 
 
 
@@ -283,36 +288,10 @@ def read_wesSA_file(file_path,grn_path,results_path):
         mp = mapping(arch_path,GRN[grn_index],dic)
         mp.generate_histogram()
         hist = mp.get_hist()
-        visualization.get_dot(mp,f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA')
-        visualization.get_histogram(hist[0],f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA','B_' + d)
+        visualization.get_dot(mp,f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA_new')
+        visualization.get_histogram(hist[0],f'wesSA_{arch_type}',f'{grn_names[grn_index]}/weSA_new','B_' + d)
 
-        # getting grn with edge colors by dist in arch
-        # grn = GRN[grn_index]
-        # dict_label,dict_color = mp.get_edge_attr()
-        # nx.set_edge_attributes(grn,dict_label,'label')
-        # nx.set_edge_attributes(grn,dict_color,'color')
-        # dot = nx.nx_pydot.to_pydot(grn)
-        # s_dot = dot.to_string()
-
-
-
-        # path = f"benchmarks/{grn_names[grn_index]}/DOT"  
-        # file_name = f"wesSA_mesh_{grn_names[grn_index]}.dot"
-
-        # isExist = os.path.exists(path)
-
-        # if not isExist:
-    
-        #     # Create a new directory because it does not exist 
-        #     os.makedirs(path)
-        #     print("The new directory is created!")
-
-        # completeName = os.path.join(path, file_name)
-
-        # with open(completeName, 'w') as f:
-        #     f.write(s_dot)
-        # f.close()
-
+        
 
 
 

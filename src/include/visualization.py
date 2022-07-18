@@ -269,7 +269,7 @@ def graph_visu(mp: mappingGRN, pre_made_sa = True) -> nx.DiGraph:
             grn_node = mp.arc_2_grn(pe)
             if (pe_stats[pe][0] == 0 and pe_stats[pe][1] == 0 and pe_stats[pe][2] != 0):
                 nx.set_node_attributes(CGRA,{pe: {'fillcolor':'#bdbdbd'}}) #fill color for PEs used as bridge
-            nx.set_node_attributes(CGRA, {pe: {'label':pe_stats[pe][2]}})
+            nx.set_node_attributes(CGRA, {pe: {'label':grn_node}})
             nx.set_node_attributes(CGRA,{pe: {'tooltip':f"name: {grn_node},\nin_degree: {CGRA.in_degree(pe)},\nout_degree: {CGRA.out_degree(pe)}" }})
 
 

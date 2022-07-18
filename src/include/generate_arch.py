@@ -2,6 +2,7 @@ import networkx as nx
 import json
 import os
 
+
 def create_json(x:int, y:int, arch_type='mesh'):
 
 
