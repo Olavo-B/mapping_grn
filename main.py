@@ -26,14 +26,14 @@ def run_grn(id,GRN,ARCH,results):
 
 
 def main():
-    grn2dot = Grn2dot('misc/grn_benchmarks-main/40-100/Cholesterol Regulatory Pathway/expr/expressions.ALL.txt')
+    grn2dot = Grn2dot('misc/grn_benchmarks-main/40-100/ /expr/expressions.ALL.txt')
 
     GRN = grn2dot.get_nx_digraph()
 
     # arch_size = math.isqrt(GRN.number_of_nodes()) + 1
 
 
-    results_path = pathlib.Path('misc/392.txt')
+    results_path = pathlib.Path('misc/825.txt')
     print(results_path)
 
     pre_made_mapping = {}
@@ -58,7 +58,7 @@ def main():
 
     ### TEST BENCH ###
 
-    print(mapping.get_mapped_grn())
+    #print(mapping.get_mapped_grn())
 
     # sm.simulated_annealing(mapping,data=True)
     # # smrand.simulated_annealing(mapping,data=True)
@@ -71,8 +71,8 @@ def main():
 
     # visualization.get_histogram(list_hist[-1],fname,'histogram',len(list_hist),show_plot=True)
     # visualization.get_histogram(list_hist[0],fname,'histogram',0)
-    visualization.get_dot(mapping,'9x6_mesh','histogram')
-
+    visualization.get_dot(mapping,'8x8_mesh','histogram')
+    # visualization.hub_visu(mapping)
 
     # df = generate_df('misc/results','misc/grn_benchmarks-main','misc/results')
     # df.to_csv('misc/dataframes/df_arch.csv',index=False)
