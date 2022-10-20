@@ -33,26 +33,29 @@ def main():
     # arch_size = math.isqrt(GRN.number_of_nodes()) + 1
 
 
-    results_path = pathlib.Path('misc/392.txt')
-    print(results_path)
+    # results_path = pathlib.Path('misc/392.txt')
+    # print(results_path)
 
-    pre_made_mapping = {}
-    with open(results_path) as result:
-        first_line = result.readline()
-        data = first_line.split(' ')
-        data[1] =   data[1][:-1]
-        arch_path = create_json(int(data[0]),int(data[1]))
-        lines = result.readlines()[0:]
-        for line in lines:
-            data = line.split('  ')
-            data[1] = ' ' + data[1][:-1]
-            pre_made_mapping[int(data[0])   ] = data[1]    
+    # pre_made_mapping = {}
+    # with open(results_path) as result:
+    #     first_line = result.readline()
+    #     data = first_line.split(' ')
+    #     data[1] =   data[1][:-1]
+    #     arch_path = create_json(int(data[0]),int(data[1]))
+    #     lines = result.readlines()[0:]
+    #     for line in lines:
+    #         data = line.split('  ')
+    #         data[1] = ' ' + data[1][:-1]
+    #         pre_made_mapping[int(data[0])   ] = data[1]    
 
-    aux = arch_path.split('/')
-    aux = aux[3].split('.')
-    fname = aux[0]
+    # aux = arch_path.split('/')
+    # aux = aux[3].split('.')
+    # fname = aux[0]
 
-    mapping = mappingGRN(arch_path, GRN,pre_made=pre_made_mapping)
+
+    arch_path = create_json(18,18,'chess')
+
+    mapping = mappingGRN(arch_path, GRN)
 
 
 

@@ -1,8 +1,11 @@
+from dis import dis
 import os
+from pkg_resources import get_distribution
 import pydot
 import pandas as pd
 import networkx as nx
 import random as rand 
+from colour import Color
 import matplotlib.pyplot as plt
 from src.mappingGRN import mappingGRN
 import src.algorithms.simulated_anealling as sa
@@ -269,7 +272,7 @@ def graph_visu(mp: mappingGRN, pre_made_sa = True) -> nx.DiGraph:
             grn_node = mp.arc_2_grn(pe)
             if (pe_stats[pe][0] == 0 and pe_stats[pe][1] == 0 and pe_stats[pe][2] != 0):
                 nx.set_node_attributes(CGRA,{pe: {'fillcolor':'#bdbdbd'}}) #fill color for PEs used as bridge
-            nx.set_node_attributes(CGRA, {pe: {'label':grn_node}})
+            nx.set_node_attributes(CGRA, {pe: {'label':pe_stats[pe][2]}})
             nx.set_node_attributes(CGRA,{pe: {'tooltip':f"name: {grn_node},\nin_degree: {CGRA.in_degree(pe)},\nout_degree: {CGRA.out_degree(pe)}" }})
 
 
@@ -291,11 +294,46 @@ def graph_visu(mp: mappingGRN, pre_made_sa = True) -> nx.DiGraph:
         return mp.get_cgra()
  
 
+def graph_visu_all_dist(mp: mappingGRN, pre_made_sa = True) -> nx.DiGraph:
+
+
+
+    CGRA = mp.get_cgra()
+    x,y = mp.get_dimension()
+    pos_x = x//2
+    pos_y = y//2
+
+    pe_pos = x * pos_x + pos_y - 1
+
+    dist = nx.bellman_ford_predecessor_and_distance(CGRA, pe_pos)[1]
+
+    max_dsit = max(dist.values())
+
+    red = Color("white")
+    colors = list(red.range_to(Color("red"),max_dsit+1))
+
+
+    # add node attributes:
+    #                     a) fillcolor of PEs used as bridge
+    #                     b) label showing PEs stats: in degree, out degree, bridge count
+    #                     c) tooltip showing gene's name in PE
+    for pe in CGRA.nodes():
+        nx.set_node_attributes(CGRA, {pe: {'label': dist[pe]}})
+        if(pe == pe_pos): nx.set_node_attributes(CGRA, {pe: {'fillcolor': '#ffffff'}})
+        nx.set_node_attributes(CGRA, {pe: {'fillcolor': str(colors[dist[pe]])}})
+
+
+    return mp.get_cgra()
+
+
+
+
+
 def arch_struct(graph: nx.DiGraph):
     return to_pydot(graph) , list(graph.nodes())
 
 
 def get_dot(mp: mappingGRN,  arch_name: str,grn_name: str, pre_made_sa = True) -> None:
-    arch = graph_visu(mp,pre_made_sa)
+    arch = graph_visu_all_dist(mp,pre_made_sa)
     dot,nodes = arch_struct(arch)
     build_dot(dot,nodes,mp.get_dimension(),arch_name, grn_name)

@@ -34,7 +34,7 @@ def create_json(x:int, y:int, arch_type='mesh'):
         g = nx.grid_2d_graph(x,y,create_using= nx.DiGraph)
         
         for node,i in zip(g.nodes(),range(g.number_of_nodes())):
-            if i%2==0:
+            if (node[0]+node[1])%2!=0:
                 if ((node[0] + 2),node[1]) in g.nodes():
                     # print(f'creating edge from {node} to {((node[0] + 2),node[1])}')
                     g.add_edge(node,((node[0] + 2),node[1]))
