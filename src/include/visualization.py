@@ -10,8 +10,11 @@ import matplotlib.pyplot as plt
 from src.mappingGRN import mappingGRN
 import src.algorithms.simulated_anealling as sa
 
+from PIL import ImageColor
 
 
+def rgb2hex(r, g, b):
+    return '#{:02x}{:02x}{:02x}'.format(r, g, b)
 
 def get_histogram(data:dict,arch_name:str,grn_name:str,i, show_plot = False) -> None:
 
@@ -172,7 +175,7 @@ def to_pydot(N):
         )
     try:
         P.set_node_defaults(style = 'filled',
-                            fixedsize = 'false',
+                            fixedsize = 'true',
                             width = '0.6')
     except KeyError:
         pass
@@ -334,6 +337,82 @@ def arch_struct(graph: nx.DiGraph):
 
 
 def get_dot(mp: mappingGRN,  arch_name: str,grn_name: str, pre_made_sa = True) -> None:
+<<<<<<< HEAD
     arch = graph_visu_all_dist(mp,pre_made_sa)
+=======
+    #arch = graph_visu(mp,pre_made_sa)
+    arch = hub_visu(mp)
+>>>>>>> 4c9b37478dbe8142ec633c6cf26ef44a28481482
     dot,nodes = arch_struct(arch)
     build_dot(dot,nodes,mp.get_dimension(),arch_name, grn_name)
+
+
+
+def hub_visu(mp:mappingGRN, pre_made=True):
+
+    grn=mp.get_grn()
+    arch=mp.get_cgra()
+    colors = {}
+
+    # Pegar os 3 hubs da GRN
+    nodes=grn.nodes
+    map_hub=[]
+    hubs=[]
+    
+    grn_names={}
+    values=0
+    for node in nodes:
+        neighs=list(grn.neighbors(node))
+        preds=list(grn.predecessors(node))
+        
+        deg=len(list(set(neighs+preds)))
+        map_hub.append((node,deg))
+        grn_names[node]=values
+        values+=1
+    
+    map_hub.sort(key=lambda x:x[1], reverse=True)
+
+    for node in map_hub[0:3]:
+        hubs.append(node[0])
+
+    hub_color=["#FF7070", "#70FF70", "#7070FF"]
+    k=0
+
+    # colorir os hubs
+    for node in hubs:
+        src = mp.grn_2_arc(node)
+        colors=hub_color[k]
+        k+=1
+        
+        neighs=list(grn.neighbors(node))
+        preds=list(grn.predecessors(node))
+        neighbors=list(set(neighs+preds))
+
+        for neighbor in neighbors:
+            if neighbor in hubs: continue
+            tar=mp.grn_2_arc(neighbor)
+
+            color=nx.get_node_attributes(arch,'fillcolor')
+
+            if color[tar]!='#FFFFFF':
+                
+                c1=color[tar]
+                c2=colors
+                cur_hub=nx.get_node_attributes(arch,'label')[tar]
+                inter=str(cur_hub)+" "+str(src)
+
+                r1, g1, b1 = [int(c1[p:p+2], 16) for p in range(1,6,2)]
+                r2, g2, b2 = [int(c2[p:p+2], 16) for p in range(1,6,2)]
+                c = '#{:02x}{:02x}{:02x}'.format((r1+r2) // 2, (g1+g2) //2, (b1+b2)// 2)
+
+                nx.set_node_attributes(arch,{tar:{'fillcolor':c}})
+                nx.set_node_attributes(arch, {tar: {'label':inter}})
+            else:
+                nx.set_node_attributes(arch,{tar:{'fillcolor':colors}})
+                nx.set_node_attributes(arch, {tar: {'label':src}})
+
+        nx.set_node_attributes(arch,{src: {'fillcolor':colors}}) #fill color for PEs with a gene in
+        nx.set_node_attributes(arch, {src: {'label':"HUB "+str(src)}})
+        nx.set_node_attributes(arch,{src:{'shape':'Msquare'}})
+
+    return arch
